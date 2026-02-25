@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../styles.css">
   <script src="../../theme.js"></script>
+  <script src="../copy-code.js"></script>
 </head>
 <body>
   <nav>
@@ -34,6 +35,7 @@
         <div class="sidebar-title">Get Started</div>
         <ul class="sidebar-links">
           <li><a href="./" class="active">Quick Start</a></li>
+          <li><a href="./coming-from-react.html">Coming from React</a></li>
           <li><a href="./signals.html">Signals</a></li>
           <li><a href="./components.html">Components</a></li>
         </ul>
@@ -83,7 +85,7 @@
           <p>The fastest way to get started is with our CLI:</p>
 
           <div class="code-header">Terminal</div>
-<pre><code>npx create-what my-app
+<pre><code>npm create what@latest my-app
 cd my-app
 npm install
 npm run dev</code></pre>
@@ -177,26 +179,42 @@ npm run dev</code></pre>
 
 <span class="function">mount</span>(&lt;App /&gt;, <span class="string">'#app'</span>);</code></pre>
 
-          <p><code>computed()</code> creates a derived signal. It:</p>
+          <p><code>useComputed()</code> creates a derived signal. It:</p>
           <ul>
             <li>Tracks which signals it reads (<code>count</code> in this case)</li>
             <li>Caches its value until dependencies change</li>
             <li>Updates automatically when <code>count</code> changes</li>
           </ul>
 
+          <div class="callout callout-warning">
+            <p class="callout-title">Why not just <code>const doubled = count() * 2</code>?</p>
+            <p>In React, that works because the entire component function re-runs on every state change. In What, the component function runs <strong>once</strong> — so <code>count() * 2</code> evaluates to a plain number at creation time and never updates. <code>useComputed</code> creates a reactive derivation that stays in sync.</p>
+            <p>For simple one-off expressions in JSX, the compiler handles it: <code>&lt;p&gt;{count() * 2}&lt;/p&gt;</code> works directly. Use <code>useComputed</code> when you need the derived value in multiple places or want to pass it to child components.</p>
+          </div>
+
           <h2 id="side-effects">Running Side Effects</h2>
           <p>Need to do something when a signal changes? Use <code>effect()</code>:</p>
 
-<pre><code><span class="keyword">import</span> { signal, effect } <span class="keyword">from</span> <span class="string">'what-framework'</span>;
+          <div class="code-header">src/main.jsx</div>
+<pre><code><span class="keyword">import</span> { mount, useSignal, effect } <span class="keyword">from</span> <span class="string">'what-framework'</span>;
 
-<span class="keyword">const</span> count = <span class="function">signal</span>(<span class="number">0</span>);
+<span class="keyword">function</span> <span class="function">App</span>() {
+  <span class="keyword">const</span> count = <span class="function">useSignal</span>(<span class="number">0</span>);
 
-<span class="comment">// Runs immediately, then re-runs when count changes</span>
-<span class="function">effect</span>(() =&gt; {
-  console.log(<span class="string">'Count is now:'</span>, count());
-});
+  <span class="comment">// Runs immediately, then re-runs when count changes</span>
+  <span class="function">effect</span>(() =&gt; {
+    document.title = <span class="string">`Count: ${count()}`</span>;
+  });
 
-count.set(<span class="number">5</span>);  <span class="comment">// Logs: "Count is now: 5"</span></code></pre>
+  <span class="keyword">return</span> (
+    &lt;div&gt;
+      &lt;p&gt;{count()}&lt;/p&gt;
+      &lt;button onClick={() =&gt; count.set(c =&gt; c + <span class="number">1</span>)}&gt;+1&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+
+          <p>Effects auto-track their dependencies — no dependency array needed. Any signal read inside the effect becomes a dependency automatically.</p>
 
           <h2 id="next-steps">Next Steps</h2>
           <p>You've learned the basics. Here's where to go next:</p>

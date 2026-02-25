@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../styles.css">
   <script src="../../theme.js"></script>
+  <script src="../copy-code.js"></script>
 </head>
 <body>
   <nav>
@@ -57,15 +58,38 @@
 
 <pre><code><span class="keyword">import</span> { signal } <span class="keyword">from</span> <span class="string">'what-framework'</span>;
 
-<span class="comment">// Create a signal with initial value</span>
-<span class="keyword">const</span> count = <span class="function">signal</span>(<span class="number">0</span>);
+<span class="keyword">function</span> <span class="function">Counter</span>() {
+  <span class="comment">// Create a signal with initial value</span>
+  <span class="keyword">const</span> count = <span class="function">signal</span>(<span class="number">0</span>);
 
-<span class="comment">// Read the value</span>
-console.log(count());  <span class="comment">// 0</span>
+  <span class="keyword">return</span> (
+    &lt;div&gt;
+      &lt;p&gt;Count: {count()}&lt;/p&gt;
+      <span class="comment">// Update signals in event handlers</span>
+      &lt;button onClick={() =&gt; count.set(count() + <span class="number">1</span>)}&gt;+1&lt;/button&gt;
+      &lt;button onClick={() =&gt; count.set(<span class="number">0</span>)}&gt;Reset&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
 
-<span class="comment">// Update the value</span>
-count.set(<span class="number">1</span>);
-console.log(count());  <span class="comment">// 1</span></code></pre>
+          <p><code>signal(0)</code> creates the signal. <code>count()</code> reads it. <code>count.set(value)</code> updates it — always inside an <strong>event handler</strong> or <strong>effect</strong>, never bare in the component body.</p>
+
+          <div class="callout callout-warning">
+            <p class="callout-title">Never call .set() in the component body</p>
+            <p>Calling <code>.set()</code> directly in a component function (outside event handlers or effects) causes an infinite loop — the update triggers a re-render, which calls <code>.set()</code> again, forever.</p>
+<pre><code><span class="comment">// BAD — infinite loop!</span>
+<span class="keyword">function</span> <span class="function">Broken</span>() {
+  <span class="keyword">const</span> count = <span class="function">signal</span>(<span class="number">0</span>);
+  count.set(<span class="number">1</span>);  <span class="comment">// Re-renders → calls set again → forever</span>
+  <span class="keyword">return</span> &lt;p&gt;{count()}&lt;/p&gt;;
+}
+
+<span class="comment">// GOOD — update in response to events</span>
+<span class="keyword">function</span> <span class="function">Works</span>() {
+  <span class="keyword">const</span> count = <span class="function">signal</span>(<span class="number">0</span>);
+  <span class="keyword">return</span> &lt;button onClick={() =&gt; count.set(<span class="number">1</span>)}&gt;Set&lt;/button&gt;;
+}</code></pre>
+          </div>
 
           <h2 id="board-state">Adding State to the Board</h2>
           <p>Let's create a signal to hold the state of all 9 squares:</p>

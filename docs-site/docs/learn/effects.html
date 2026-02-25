@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../styles.css">
   <script src="../../theme.js"></script>
+  <script src="../copy-code.js"></script>
 </head>
 <body>
   <nav>
@@ -34,6 +35,7 @@
         <div class="sidebar-title">Get Started</div>
         <ul class="sidebar-links">
           <li><a href="./">Quick Start</a></li>
+          <li><a href="./coming-from-react.html">Coming from React</a></li>
           <li><a href="./signals.html">Signals</a></li>
           <li><a href="./components.html">Components</a></li>
         </ul>
@@ -117,6 +119,12 @@ count.set(<span class="number">5</span>);  <span class="comment">// Logs: "Count
 
 a.set(<span class="number">10</span>);  <span class="comment">// Effect re-runs, logs 12</span>
 b.set(<span class="number">20</span>);  <span class="comment">// Effect re-runs, logs 30</span></code></pre>
+
+          <div class="callout callout-info">
+            <p class="callout-title">No dependency arrays</p>
+            <p>Unlike React's <code>useEffect(fn, [deps])</code>, What effects auto-track. Every signal read inside the function becomes a dependency automatically. You never need to maintain a deps array, and you'll never have stale closure bugs.</p>
+            <p>If you only need code to run once on mount (like React's <code>useEffect(fn, [])</code>), use <a href="./lifecycle.html"><code>onMount</code></a> instead.</p>
+          </div>
 
           <h2 id="cleanup">Cleanup Functions</h2>
           <p>Effects can return a cleanup function that runs before the next execution or when the effect is disposed:</p>
@@ -264,6 +272,8 @@ details.set(<span class="string">'newer'</span>);  <span class="comment">// Trig
             <li><strong>Always clean up.</strong> If you add a listener, remove it in cleanup.</li>
             <li><strong>Prefer computed for derived values.</strong> Effects are for side effects only.</li>
             <li><strong>Don't modify signals you're reading.</strong> This can cause infinite loops.</li>
+            <li><strong>Never call <code>.set()</code> in the component body.</strong> Use event handlers, effects, or <a href="./lifecycle.html"><code>onMount</code></a>.</li>
+            <li><strong>Use <code>onMount</code> for one-time setup.</strong> Don't use <code>effect</code> when you just need code to run once.</li>
             <li><strong>Handle errors.</strong> Wrap async code in try/catch.</li>
           </ul>
 

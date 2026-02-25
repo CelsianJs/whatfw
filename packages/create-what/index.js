@@ -878,6 +878,7 @@ async function main() {
       moduleResolution: 'bundler',
       jsx: 'preserve',
       jsxImportSource: 'what-framework',
+      allowJs: true,
       strict: true,
       noEmit: true,
       skipLibCheck: true,

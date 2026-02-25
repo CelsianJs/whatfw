@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../styles.css">
   <script src="../../theme.js"></script>
+  <script src="../copy-code.js"></script>
   <style>
     .game-preview {
       display: flex;
@@ -31,14 +32,21 @@
       border: 1px solid var(--border);
       font-size: 24px;
       font-weight: 700;
-      cursor: pointer;
+      cursor: default;
+      pointer-events: none;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    .square:hover { background: var(--border); }
     .game-info { font-size: 15px; }
     .game-info h4 { margin-bottom: 8px; }
+    .preview-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
   </style>
 </head>
 <body>
@@ -90,16 +98,19 @@
           <p class="subtitle">Build a complete, interactive tic-tac-toe game step by step. You'll learn the core concepts of What Framework while building something real.</p>
 
           <div class="game-preview">
-            <div class="board">
-              <button class="square">X</button>
-              <button class="square">O</button>
-              <button class="square">X</button>
-              <button class="square"></button>
-              <button class="square">X</button>
-              <button class="square">O</button>
-              <button class="square">O</button>
-              <button class="square"></button>
-              <button class="square">X</button>
+            <div>
+              <div class="preview-label">Preview of finished game</div>
+              <div class="board">
+                <div class="square">X</div>
+                <div class="square">O</div>
+                <div class="square">X</div>
+                <div class="square"></div>
+                <div class="square">X</div>
+                <div class="square">O</div>
+                <div class="square">O</div>
+                <div class="square"></div>
+                <div class="square">X</div>
+              </div>
             </div>
             <div class="game-info">
               <h4>Winner: X</h4>
