@@ -170,6 +170,7 @@ function Nav() {
           <li><a href="#how">How It Works</a></li>
           <li><a href="#architecture">Architecture</a></li>
           <li><a href="#benchmarks">Performance</a></li>
+          <li><a href="https://whatfw.com">What Framework</a></li>
           <li><a href="https://github.com/zvndev/what-fw" class="nav-cta">GitHub</a></li>
         </ul>
       </div>
@@ -478,7 +479,7 @@ function Footer() {
   return (
     <footer>
       <div class="container">
-        <p>What Framework — <a href="https://github.com/zvndev/what-fw">GitHub</a></p>
+        <p><a href="https://whatfw.com">What Framework</a> — <a href="https://benchmarks.whatfw.com">Benchmarks</a> — <a href="https://github.com/zvndev/what-fw">GitHub</a></p>
         <div class="built-with">
           Built with <span class="fw-badge">What Framework</span>
         </div>
