@@ -10,10 +10,10 @@
     "smoke": "node scripts/smoke.mjs"
   },
   "dependencies": {
-    "what-framework": "^0.5.2"
+    "what-framework": "^0.5.4"
   },
   "devDependencies": {
-    "vite": "^5.4.0",
-    "what-compiler": "^0.5.2"
+    "vite": "^6.0.0",
+    "what-compiler": "^0.5.4"
   }
 }
