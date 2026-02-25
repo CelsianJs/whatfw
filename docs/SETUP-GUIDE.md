@@ -159,38 +159,56 @@ export default defineConfig({
 });
 ```
 
-Now install any React library and use it normally:
+Now install any React library and use it in your What components:
 
 ```bash
 npm install zustand
 ```
 
 ```jsx
-import React, { useState } from 'react';
-import ReactDOM from 'react-dom/client';
+import { mount, useSignal } from 'what-framework';
 import { create } from 'zustand';
 
+// Zustand store — works exactly like normal, no changes needed
 const useStore = create((set) => ({
   count: 0,
   increment: () => set((s) => ({ count: s.count + 1 })),
+  reset: () => set({ count: 0 }),
 }));
 
 function App() {
+  // Zustand hook works inside a What component
   const count = useStore((s) => s.count);
   const increment = useStore((s) => s.increment);
+  const reset = useStore((s) => s.reset);
+
+  // You can mix What signals with React libraries
+  const localCount = useSignal(0);
 
   return (
-    <div>
-      <p>Count: {count}</p>
-      <button onClick={increment}>+1</button>
-    </div>
+    <main>
+      <h1>What + Zustand</h1>
+
+      <section>
+        <h2>Zustand Store</h2>
+        <p>Count: {count}</p>
+        <button onClick={increment}>+1</button>
+        <button onClick={reset}>Reset</button>
+      </section>
+
+      <section>
+        <h2>What Signal</h2>
+        <p>Local: {localCount()}</p>
+        <button onClick={() => localCount.set(c => c + 1)}>+1</button>
+      </section>
+    </main>
   );
 }
 
-ReactDOM.createRoot(document.getElementById('app')).render(<App />);
+mount(<App />, '#app');
 ```
 
-The React imports resolve to What's signals engine automatically. The library never knows the difference.
+Under the hood, zustand internally imports `react` and calls `useState`/`useEffect`. The compat plugin redirects those to What's signals engine. Zustand never knows the difference — but your app is still a What app with `mount()`, signals, and the compiler.
 
 ---
 
