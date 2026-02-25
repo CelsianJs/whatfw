@@ -17,6 +17,14 @@ export function createBridge({ port = 9229 } = {}) {
   let correlationCounter = 0;
   const pendingCommands = new Map();
 
+  // Snapshot dedup cache (100ms)
+  let cachedSnapshot = null;
+  let cacheTime = 0;
+  const SNAPSHOT_CACHE_MS = 100;
+
+  // Baseline snapshot for diff tool
+  let baselineSnapshot = null;
+
   const wss = new WebSocketServer({ port });
 
   wss.on('connection', (ws) => {
@@ -37,6 +45,16 @@ export function createBridge({ port = 9229 } = {}) {
           if (msg.event === 'error:captured') {
             errorLog.push({ ...msg.data, timestamp: Date.now() });
             if (errorLog.length > MAX_ERROR_LOG) errorLog.shift();
+          }
+          break;
+        case 'events':
+          for (const item of msg.batch || []) {
+            eventLog.push({ event: item.event, data: item.data, timestamp: Date.now() });
+            if (eventLog.length > MAX_EVENT_LOG) eventLog.shift();
+            if (item.event === 'error:captured') {
+              errorLog.push({ ...item.data, timestamp: Date.now() });
+              if (errorLog.length > MAX_ERROR_LOG) errorLog.shift();
+            }
           }
           break;
         case 'response': {
@@ -90,12 +108,33 @@ export function createBridge({ port = 9229 } = {}) {
     return data;
   }
 
+  async function getOrRefreshSnapshot() {
+    const now = Date.now();
+    if (cachedSnapshot && now - cacheTime < SNAPSHOT_CACHE_MS) return cachedSnapshot;
+    try {
+      cachedSnapshot = await refreshSnapshot();
+      cacheTime = now;
+      return cachedSnapshot;
+    } catch {
+      return latestSnapshot;
+    }
+  }
+
   async function getCacheSnapshot() {
     return sendCommand('get-cache');
   }
 
   function getSnapshot() {
     return latestSnapshot;
+  }
+
+  function saveBaseline() {
+    baselineSnapshot = latestSnapshot ? JSON.parse(JSON.stringify(latestSnapshot)) : null;
+    return !!baselineSnapshot;
+  }
+
+  function getBaseline() {
+    return baselineSnapshot;
   }
 
   function getEvents(since) {
@@ -118,12 +157,15 @@ export function createBridge({ port = 9229 } = {}) {
 
   return {
     getSnapshot,
+    getOrRefreshSnapshot,
     getEvents,
     getErrors,
     isConnected,
     sendCommand,
     refreshSnapshot,
     getCacheSnapshot,
+    saveBaseline,
+    getBaseline,
     close,
   };
 }

@@ -22,6 +22,16 @@ function logGrouped(badge, badgeStyle, title, data) {
 }
 
 export function connectDevToolsMCP({ port = 9229 } = {}) {
+  // Never connect in production
+  if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'production') {
+    return { disconnect() {}, isConnected: false, eventCount: 0 };
+  }
+  try {
+    if (import.meta?.env?.PROD) {
+      return { disconnect() {}, isConnected: false, eventCount: 0 };
+    }
+  } catch {}
+
   let ws = null;
   let connected = false;
   let reconnectTimer = null;
@@ -31,6 +41,7 @@ export function connectDevToolsMCP({ port = 9229 } = {}) {
   let eventCount = 0;
   let hasLoggedDisconnect = false;
   let reconnectAttempts = 0;
+  let unsubscribeFn = null;
 
   // Startup banner
   console.log(
@@ -71,12 +82,36 @@ export function connectDevToolsMCP({ port = 9229 } = {}) {
       }
 
       // Subscribe to devtools events and stream them
+      // Clean up previous subscription to prevent leak on reconnect
+      if (unsubscribeFn) {
+        unsubscribeFn();
+        unsubscribeFn = null;
+      }
       if (devtools) {
-        devtools.subscribe((event, data) => {
+        let eventBatch = [];
+        let batchTimer = null;
+
+        function flushEventBatch() {
+          if (eventBatch.length === 0) return;
+          if (eventBatch.length === 1) {
+            // Single event — send normally for compatibility
+            const item = eventBatch[0];
+            send({ type: 'event', event: item.event, data: item.data });
+          } else {
+            send({ type: 'events', batch: eventBatch });
+          }
+          eventBatch = [];
+          batchTimer = null;
+        }
+
+        unsubscribeFn = devtools.subscribe((event, data) => {
           eventCount++;
-          send({ type: 'event', event, data: devtools.safeSerialize(data) });
+          eventBatch.push({ event, data: devtools.safeSerialize(data) });
+          if (!batchTimer) {
+            batchTimer = setTimeout(flushEventBatch, 16);
+          }
         });
-        log('MCP', BADGE, 'Subscribed to reactive events — streaming to bridge');
+        log('MCP', BADGE, 'Subscribed to reactive events — streaming to bridge (batched)');
       }
     };
 
@@ -108,7 +143,7 @@ export function connectDevToolsMCP({ port = 9229 } = {}) {
     }
   }
 
-  function handleCommand(msg) {
+  async function handleCommand(msg) {
     const { command, correlationId, args } = msg;
     const devtools = window.__WHAT_DEVTOOLS__;
     let result;
@@ -182,9 +217,22 @@ export function connectDevToolsMCP({ port = 9229 } = {}) {
         }
         break;
       }
-      default:
-        result = { error: `Unknown command: ${command}` };
-        log('AI →', BADGE_WARN, `Unknown command: ${command}`);
+      default: {
+        // Try extended command handlers
+        let extResult = null;
+        try {
+          const { handleExtendedCommand } = await import('./client-commands.js');
+          extResult = handleExtendedCommand(command, args, devtools);
+        } catch {}
+
+        if (extResult !== null) {
+          result = extResult;
+          logGrouped('AI →', BADGE_CMD, `🔧 ${command}`, result);
+        } else {
+          result = { error: `Unknown command: ${command}` };
+          log('AI →', BADGE_WARN, `Unknown command: ${command}`);
+        }
+      }
     }
 
     if (correlationId) {
@@ -208,6 +256,10 @@ export function connectDevToolsMCP({ port = 9229 } = {}) {
   }
 
   function disconnect() {
+    if (unsubscribeFn) {
+      unsubscribeFn();
+      unsubscribeFn = null;
+    }
     if (reconnectTimer) {
       clearTimeout(reconnectTimer);
       reconnectTimer = null;

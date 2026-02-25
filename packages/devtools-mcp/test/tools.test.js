@@ -37,9 +37,12 @@ function createMockBridge(opts = {}) {
     isConnected: () => connected,
     getSnapshot: () => snapshot,
     refreshSnapshot: async () => snapshot,
+    getOrRefreshSnapshot: async () => snapshot,
     getCacheSnapshot: async () => opts.cache || [],
     getEvents: (since) => since ? events.filter(e => e.timestamp > since) : events,
     getErrors: (since) => since ? errors.filter(e => e.timestamp > since) : errors,
+    saveBaseline: () => true,
+    getBaseline: () => snapshot,
     sendCommand: async (command, args) => {
       if (commandHandler) return commandHandler(command, args);
       if (command === 'set-signal') {
