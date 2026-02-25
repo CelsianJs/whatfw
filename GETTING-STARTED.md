@@ -5,7 +5,7 @@ Canonical setup for new apps. The What compiler is required — it handles JSX t
 ## 1. Create a project
 
 ```bash
-npx create-what my-app
+npm create what@latest my-app
 cd my-app
 npm install
 npm run dev

@@ -5,7 +5,7 @@ Scaffold a new [What Framework](https://whatfw.com) project with one command.
 ## Usage
 
 ```bash
-npx create-what my-app
+npm create what@latest my-app
 cd my-app
 npm install
 npm run dev
@@ -20,7 +20,7 @@ bun create what@latest my-app
 ### Skip prompts
 
 ```bash
-npx create-what my-app --yes
+npm create what@latest my-app -- --yes
 ```
 
 ## Options

@@ -13,7 +13,7 @@ npm install what-framework
 Or scaffold a new project:
 
 ```bash
-npx create-what my-app
+npm create what@latest my-app
 cd my-app
 npm install
 npm run dev

@@ -5,7 +5,7 @@ This is the canonical path for app teams.
 ## 1. Scaffold and run
 
 ```bash
-npx create-what my-app
+npm create what@latest my-app
 cd my-app
 npm install
 npm run dev

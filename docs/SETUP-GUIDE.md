@@ -15,13 +15,20 @@ Get up and running with What Framework in under 5 minutes.
 ## 1. Create a New Project
 
 ```bash
-npx create-what my-app
+npm create what@latest my-app
 cd my-app
 npm install
 npm run dev
 ```
 
 Open **http://localhost:5173** — you should see a counter app with increment/decrement buttons.
+
+> **If that doesn't work**, try the explicit form: `npx create-what@latest my-app`
+>
+> Still getting errors? Clear the npx cache and retry:
+> ```bash
+> npx --yes create-what@0.5.6 my-app
+> ```
 
 The scaffolder will ask you:
 - **React compat?** — Say yes if you want to use React libraries (zustand, TanStack, etc.)
@@ -30,7 +37,7 @@ The scaffolder will ask you:
 To skip prompts and get defaults:
 
 ```bash
-npx create-what my-app --yes
+npm create what@latest my-app -- --yes
 ```
 
 ---
@@ -133,7 +140,7 @@ This lets you use React ecosystem libraries (zustand, TanStack Query, Radix UI, 
 ### Option A: Scaffold with react compat
 
 ```bash
-npx create-what react-app
+npm create what@latest react-app
 # When prompted, say Yes to "Add React library support?"
 cd react-app
 npm install
@@ -379,6 +386,11 @@ mount(<App />, '#app');
 ---
 
 ## Troubleshooting
+
+**`sh: create-what: command not found` when running npx**
+→ Use the explicit version: `npx --yes create-what@latest my-app`
+→ Or use npm's create shorthand: `npm create what@latest my-app`
+→ Make sure you're on **npm 9+** (`npm -v`). Older npm versions have npx bugs.
 
 **"Cannot find module 'what-framework'"**
 → Run `npm install` in your project directory.
