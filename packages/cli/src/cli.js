@@ -278,12 +278,42 @@ async function dev() {
   // WebSocket server for HMR (zero dependencies)
   const wsClients = new Set();
 
+  // Auto-start MCP bridge if what-devtools-mcp is installed
+  let mcpProcess = null;
+  const noMcp = args.includes('--no-mcp');
+  if (!noMcp) {
+    try {
+      const { resolve: importResolve } = await import('node:module');
+      // Check if the package exists by trying to resolve it
+      const mcpBin = join(cwd, 'node_modules', '.bin', 'what-devtools-mcp');
+      const { existsSync: mcpExists } = await import('node:fs');
+      if (mcpExists(mcpBin)) {
+        const { spawn } = await import('node:child_process');
+        const mcpPort = getFlag('--mcp-port', 9229);
+        mcpProcess = spawn('node', [mcpBin], {
+          env: { ...process.env, WHAT_MCP_PORT: String(mcpPort) },
+          stdio: 'pipe',
+        });
+        mcpProcess.on('error', () => {}); // Silently ignore spawn errors
+        mcpProcess.on('exit', () => { mcpProcess = null; });
+        // Clean up on exit
+        process.on('exit', () => mcpProcess?.kill());
+        process.on('SIGINT', () => { mcpProcess?.kill(); process.exit(0); });
+      }
+    } catch {}
+  }
+
   server.listen(port, host, () => {
     console.log(`\n  what dev server\n`);
     console.log(`  Local:   http://${host}:${port}`);
     console.log(`  Mode:    ${config.mode || 'hybrid'}`);
     console.log(`  Pages:   ${config.pagesDir || 'src/pages'}`);
-    console.log(`  HMR:     WebSocket (instant reload)\n`);
+    console.log(`  HMR:     WebSocket (instant reload)`);
+    if (mcpProcess) {
+      const mcpPort = getFlag('--mcp-port', 9229);
+      console.log(`  MCP:     ws://localhost:${mcpPort} (AI debugging enabled)`);
+    }
+    console.log();
   });
 
   // Initialize WebSocket server

@@ -128,6 +128,8 @@ function generatePackageJson(projectName, { reactCompat, cssApproach }) {
   const devDeps = {
     vite: '^6.0.0',
     'what-compiler': '^0.5.3',
+    'what-devtools': '^0.5.3',
+    'what-devtools-mcp': '^0.1.0',
   };
 
   if (reactCompat) {
@@ -168,6 +170,9 @@ function generateViteConfig({ reactCompat, cssApproach }) {
 
   imports.push(`import { defineConfig } from 'vite';`);
 
+  // AI-powered debugging — auto-injects devtools in dev mode
+  imports.push(`import whatDevToolsMCP from 'what-devtools-mcp/vite-plugin';`);
+
   if (reactCompat) {
     // React compat projects use the what-react Vite plugin instead of the
     // What compiler. The what-react plugin aliases react/react-dom imports
@@ -179,6 +184,8 @@ function generateViteConfig({ reactCompat, cssApproach }) {
     imports.push(`import what from 'what-compiler/vite';`);
     plugins.push('what()');
   }
+
+  plugins.push('whatDevToolsMCP()');
 
   if (cssApproach === 'tailwind') {
     imports.push(`import tailwindcss from '@tailwindcss/vite';`);
@@ -840,6 +847,8 @@ async function main() {
 
   mkdirSync(join(root, 'src'), { recursive: true });
   mkdirSync(join(root, 'public'), { recursive: true });
+  mkdirSync(join(root, '.claude'), { recursive: true });
+  mkdirSync(join(root, '.cursor'), { recursive: true });
 
   // .gitignore
   writeFileSync(join(root, '.gitignore'), `node_modules\ndist\n.DS_Store\n`);
@@ -898,6 +907,18 @@ async function main() {
       'zvndev.thenjs',
     ],
   }, null, 2) + '\n');
+
+  // MCP configs for AI-powered debugging (what-devtools-mcp)
+  const mcpConfig = JSON.stringify({
+    mcpServers: {
+      'what-devtools': {
+        command: 'npx',
+        args: ['what-devtools-mcp'],
+      },
+    },
+  }, null, 2) + '\n';
+  writeFileSync(join(root, '.claude', 'mcp.json'), mcpConfig);
+  writeFileSync(join(root, '.cursor', 'mcp.json'), mcpConfig);
 
   // src/main.jsx
   writeFileSync(join(root, 'src', 'main.jsx'), generateMainJsx(options));
