@@ -168,26 +168,30 @@ export function getSnapshot() {
 /**
  * Install devtools. Call once at app startup.
  * Wires into what-core's __DEV__ hooks and exposes `window.__WHAT_DEVTOOLS__`.
+ *
+ * @param {object} [core] - Optional what-core module. If not provided, attempts dynamic import.
  */
-export function installDevTools() {
+export function installDevTools(core) {
   if (installed) return;
   installed = true;
 
+  const hooks = {
+    onSignalCreate: (sig) => registerSignal(sig),
+    onSignalUpdate: (sig) => notifySignalUpdate(sig),
+    onEffectCreate: (e) => registerEffect(e),
+    onEffectDispose: (e) => unregisterEffect(e),
+  };
+
   // Wire into what-core's reactive system
-  try {
-    import('what-core').then(core => {
-      if (core.__setDevToolsHooks) {
-        core.__setDevToolsHooks({
-          onSignalCreate: (sig) => registerSignal(sig),
-          onSignalUpdate: (sig) => notifySignalUpdate(sig),
-          onEffectCreate: (e) => registerEffect(e),
-          onEffectDispose: (e) => unregisterEffect(e),
-        });
-      }
-    }).catch(() => {
-      // what-core not available — devtools still work via manual registration
-    });
-  } catch {}
+  if (core && core.__setDevToolsHooks) {
+    core.__setDevToolsHooks(hooks);
+  } else {
+    try {
+      import('what-core').then(mod => {
+        if (mod.__setDevToolsHooks) mod.__setDevToolsHooks(hooks);
+      }).catch(() => {});
+    } catch {}
+  }
 
   if (typeof window !== 'undefined') {
     window.__WHAT_DEVTOOLS__ = {

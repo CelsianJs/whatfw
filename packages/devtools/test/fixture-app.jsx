@@ -1,9 +1,9 @@
-import { signal, effect, mount } from 'what-core';
+import { signal, effect, mount, __setDevToolsHooks } from 'what-core';
 import { installDevTools, getSnapshot, subscribe } from 'what-devtools';
 import { DevPanel } from 'what-devtools/panel';
 
-// Install devtools first
-installDevTools();
+// Install devtools first — pass core for synchronous hook setup
+installDevTools({ __setDevToolsHooks });
 
 // Create some signals for the devtools to track
 const count = signal(0);

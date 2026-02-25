@@ -2,7 +2,7 @@
 // The closest framework to vanilla JS.
 
 // Reactive primitives
-export { signal, computed, effect, memo as signalMemo, batch, untrack, flushSync, createRoot } from './reactive.js';
+export { signal, computed, effect, memo as signalMemo, batch, untrack, flushSync, createRoot, __setDevToolsHooks } from './reactive.js';
 
 // Fine-grained rendering primitives
 export { template, insert, mapArray, spread, setProp, delegateEvents, on, classList } from './render.js';

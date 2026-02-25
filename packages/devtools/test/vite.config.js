@@ -36,5 +36,5 @@ export default defineConfig({
       'what-devtools': pkgs('devtools', 'src', 'index.js'),
     },
   },
-  server: { port: 4599 },
+  server: { port: 4599, strictPort: true },
 });

@@ -39,9 +39,7 @@ export function DevPanel() {
     clearInterval(interval);
   });
 
-  const panelStyle = () => isOpen()
-    ? 'position:fixed;bottom:0;right:0;width:360px;max-height:50vh;z-index:99998;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:#1a1a2e;color:#e0e0e0;border:1px solid #2a2a4a;border-radius:12px 0 0 0;box-shadow:0 -4px 24px rgba(0,0,0,0.3);display:flex;flex-direction:column;overflow:hidden;'
-    : 'display:none;';
+  const PANEL_STYLE = 'position:fixed;bottom:0;right:0;width:360px;max-height:50vh;z-index:99998;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;background:#1a1a2e;color:#e0e0e0;border:1px solid #2a2a4a;border-radius:12px 0 0 0;box-shadow:0 -4px 24px rgba(0,0,0,0.3);display:flex;flex-direction:column;overflow:hidden;';
 
   const tabStyle = (tab) => () => {
     const isActive = activeTab() === tab;
@@ -110,44 +108,46 @@ export function DevPanel() {
         W
       </button>
 
-      {/* Panel */}
-      <div style={panelStyle}>
-        {/* Header */}
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #2a2a4a;background:#16163a;">
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="font-weight:700;font-size:12px;color:#818cf8;">What DevTools</span>
+      {/* Panel — conditionally rendered */}
+      {() => isOpen() ? (
+        <div style={PANEL_STYLE}>
+          {/* Header */}
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #2a2a4a;background:#16163a;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-weight:700;font-size:12px;color:#818cf8;">What DevTools</span>
+            </div>
+            <button
+              onclick={() => isOpen(false)}
+              style="background:none;border:none;color:#6a6a8a;cursor:pointer;font-size:14px;"
+            >
+              x
+            </button>
           </div>
-          <button
-            onclick={() => isOpen(false)}
-            style="background:none;border:none;color:#6a6a8a;cursor:pointer;font-size:14px;"
-          >
-            x
-          </button>
-        </div>
 
-        {/* Tabs */}
-        <div style="display:flex;gap:4px;padding:6px 8px;border-bottom:1px solid #2a2a4a;">
-          <button style={tabStyle('signals')} onclick={() => activeTab('signals')}>
-            Signals ({() => snapshot().signals.length})
-          </button>
-          <button style={tabStyle('effects')} onclick={() => activeTab('effects')}>
-            Effects ({() => snapshot().effects.length})
-          </button>
-          <button style={tabStyle('components')} onclick={() => activeTab('components')}>
-            Components ({() => snapshot().components.length})
-          </button>
-        </div>
+          {/* Tabs */}
+          <div style="display:flex;gap:4px;padding:6px 8px;border-bottom:1px solid #2a2a4a;">
+            <button style={tabStyle('signals')} onclick={() => activeTab('signals')}>
+              Signals ({() => snapshot().signals.length})
+            </button>
+            <button style={tabStyle('effects')} onclick={() => activeTab('effects')}>
+              Effects ({() => snapshot().effects.length})
+            </button>
+            <button style={tabStyle('components')} onclick={() => activeTab('components')}>
+              Components ({() => snapshot().components.length})
+            </button>
+          </div>
 
-        {/* Content */}
-        <div style="overflow-y:auto;flex:1;">
-          {() => {
-            const tab = activeTab();
-            if (tab === 'signals') return renderSignals();
-            if (tab === 'effects') return renderEffects();
-            return renderComponents();
-          }}
+          {/* Content */}
+          <div style="overflow-y:auto;flex:1;">
+            {() => {
+              const tab = activeTab();
+              if (tab === 'signals') return renderSignals();
+              if (tab === 'effects') return renderEffects();
+              return renderComponents();
+            }}
+          </div>
         </div>
-      </div>
+      ) : null}
     </>
   );
 }
