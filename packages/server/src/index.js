@@ -15,6 +15,23 @@ export function renderToString(vnode) {
     return escapeHtml(String(vnode));
   }
 
+  // Signal — unwrap by calling it
+  if (typeof vnode === 'function' && vnode._signal) {
+    return renderToString(vnode());
+  }
+
+  // Reactive function child — call to get value
+  if (typeof vnode === 'function') {
+    try {
+      return renderToString(vnode());
+    } catch (e) {
+      if (typeof process !== 'undefined' && process.env?.NODE_ENV !== 'production') {
+        console.warn('[what-server] Error rendering reactive function in SSR:', e.message);
+      }
+      return '';
+    }
+  }
+
   // Array
   if (Array.isArray(vnode)) {
     return vnode.map(renderToString).join('');
@@ -52,6 +69,24 @@ export async function* renderToStream(vnode) {
     return;
   }
 
+  // Signal — unwrap by calling it
+  if (typeof vnode === 'function' && vnode._signal) {
+    yield* renderToStream(vnode());
+    return;
+  }
+
+  // Reactive function child — call to get value
+  if (typeof vnode === 'function') {
+    try {
+      yield* renderToStream(vnode());
+    } catch (e) {
+      if (typeof process !== 'undefined' && process.env?.NODE_ENV !== 'production') {
+        console.warn('[what-server] Error rendering reactive function in stream SSR:', e.message);
+      }
+    }
+    return;
+  }
+
   if (Array.isArray(vnode)) {
     for (const child of vnode) {
       yield* renderToStream(child);
@@ -60,10 +95,17 @@ export async function* renderToStream(vnode) {
   }
 
   if (typeof vnode.tag === 'function') {
-    const result = vnode.tag({ ...vnode.props, children: vnode.children });
-    // Support async components
-    const resolved = result instanceof Promise ? await result : result;
-    yield* renderToStream(resolved);
+    try {
+      const result = vnode.tag({ ...vnode.props, children: vnode.children });
+      // Support async components
+      const resolved = result instanceof Promise ? await result : result;
+      yield* renderToStream(resolved);
+    } catch (e) {
+      if (typeof process !== 'undefined' && process.env?.NODE_ENV !== 'production') {
+        console.warn('[what-server] Error rendering component in stream SSR:', e.message);
+      }
+      yield `<!-- SSR Error: ${escapeHtml(e.message || 'Component error')} -->`;
+    }
     return;
   }
 
@@ -181,7 +223,12 @@ function renderAttrs(props) {
         .join(';');
       out += ` style="${escapeHtml(css)}"`;
     } else if (val === true) {
-      out += ` ${key}`;
+      // ARIA attributes require explicit ="true", HTML boolean attrs can be bare
+      if (key.startsWith('aria-') || key === 'role') {
+        out += ` ${key}="true"`;
+      } else {
+        out += ` ${key}`;
+      }
     } else {
       out += ` ${key}="${escapeHtml(String(val))}"`;
     }
@@ -199,6 +246,7 @@ function escapeHtml(str) {
 }
 
 function camelToKebab(str) {
+  if (str.startsWith('--')) return str; // CSS custom properties (variables) — leave unchanged
   return str.replace(/([A-Z])/g, '-$1').toLowerCase();
 }
 
@@ -219,4 +267,7 @@ export {
   invalidatePath,
   handleActionRequest,
   getRegisteredActions,
+  generateCsrfToken,
+  validateCsrfToken,
+  csrfMetaTag,
 } from './actions.js';

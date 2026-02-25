@@ -78,17 +78,18 @@ function disposeComponent(ctx) {
   if (ctx.disposed) return;
   ctx.disposed = true;
 
-  // Run useEffect cleanup functions
-  for (const hook of ctx.hooks) {
+  // Run useEffect cleanup functions in reverse order (last effect first, matching React)
+  for (let i = ctx.hooks.length - 1; i >= 0; i--) {
+    const hook = ctx.hooks[i];
     if (hook && typeof hook === 'object' && 'cleanup' in hook && hook.cleanup) {
       try { hook.cleanup(); } catch (e) { console.error('[what] cleanup error:', e); }
     }
   }
 
-  // Run onCleanup callbacks
+  // Run onCleanup callbacks in reverse order (last registered first)
   if (ctx._cleanupCallbacks) {
-    for (const fn of ctx._cleanupCallbacks) {
-      try { fn(); } catch (e) { console.error('[what] onCleanup error:', e); }
+    for (let i = ctx._cleanupCallbacks.length - 1; i >= 0; i--) {
+      try { ctx._cleanupCallbacks[i](); } catch (e) { console.error('[what] onCleanup error:', e); }
     }
   }
 
@@ -110,6 +111,12 @@ export function disposeTree(node) {
   // Dispose reactive function child effects ({() => ...} wrappers)
   if (node._dispose) {
     try { node._dispose(); } catch (e) { /* already disposed */ }
+  }
+  // Dispose reactive prop effects (value: () => ..., class: () => ..., etc.)
+  if (node._propEffects) {
+    for (const key in node._propEffects) {
+      try { node._propEffects[key](); } catch (e) { /* already disposed */ }
+    }
   }
   if (node.childNodes) {
     for (const child of node.childNodes) {
@@ -996,6 +1003,25 @@ function applyProps(el, newProps, oldProps, isSvg) {
 }
 
 function setProp(el, key, value, isSvg) {
+  // Reactive function props — wrap in effect() for fine-grained updates.
+  // Applies to any non-event prop where the value is a function, e.g.:
+  //   h('input', { value: () => name(), class: () => active() ? 'on' : 'off' })
+  // The function is called inside an effect, so signal reads create subscriptions.
+  // When signals change, the prop is re-applied automatically.
+  if (typeof value === 'function' && !(key.startsWith('on') && key.length > 2) && key !== 'ref') {
+    // Store dispose functions on the element for cleanup
+    if (!el._propEffects) el._propEffects = {};
+    // Dispose previous effect for this prop if re-applying
+    if (el._propEffects[key]) {
+      try { el._propEffects[key](); } catch (e) { /* already disposed */ }
+    }
+    el._propEffects[key] = effect(() => {
+      const resolved = value();
+      setProp(el, key, resolved, isSvg);
+    });
+    return;
+  }
+
   // Event handlers: onClick -> click, onFocusCapture -> focus (capture phase)
   // Wrap in untrack so signal reads in handlers don't create subscriptions
   if (key.startsWith('on') && key.length > 2) {

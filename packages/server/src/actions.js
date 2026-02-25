@@ -17,7 +17,6 @@ import { signal, batch } from 'what-core';
 
 // Registry of server actions
 const actionRegistry = new Map();
-let actionIdCounter = 0;
 
 // --- CSRF Protection ---
 // Server generates a token per session; client sends it with every action request.
@@ -170,11 +169,15 @@ export function formAction(actionFn, options = {}) {
       formData = formDataOrEvent;
     }
 
-    // Convert FormData to plain object
+    // Convert FormData to plain object, preserving File instances
     const data = {};
+    let hasFiles = false;
     for (const [key, value] of formData.entries()) {
+      if (typeof File !== 'undefined' && value instanceof File) {
+        hasFiles = true;
+      }
       if (data[key]) {
-        // Handle multiple values (e.g., checkboxes)
+        // Handle multiple values (e.g., checkboxes, multi-file inputs)
         if (Array.isArray(data[key])) {
           data[key].push(value);
         } else {
@@ -186,7 +189,11 @@ export function formAction(actionFn, options = {}) {
     }
 
     try {
-      const result = await actionFn(data);
+      // If form contains files, pass the raw FormData as second arg
+      // so the action handler can access files directly
+      const result = hasFiles
+        ? await actionFn(data, formData)
+        : await actionFn(data);
       if (onSuccess) onSuccess(result, form);
       if (resetOnSuccess && form) form.reset();
       return result;

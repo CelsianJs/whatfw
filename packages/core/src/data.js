@@ -68,7 +68,7 @@ function subscribeToKey(key, revalidateFn) {
   };
 }
 
-const inFlightRequests = new Map();
+const inFlightRequests = new Map(); // key -> { promise, timestamp, refCount }
 const lastFetchTimestamps = new Map(); // key -> timestamp of last completed fetch
 
 // Create an effect scoped to the current component's lifecycle.
@@ -200,6 +200,7 @@ export function useSWR(key, fetcher, options = {}) {
     if (inFlightRequests.has(key)) {
       const existing = inFlightRequests.get(key);
       if (now - existing.timestamp < dedupingInterval) {
+        existing.refCount++;
         return existing.promise;
       }
     }
@@ -210,15 +211,20 @@ export function useSWR(key, fetcher, options = {}) {
       return cacheS.peek();
     }
 
-    // Abort previous request
-    if (abortController) abortController.abort();
+    // Abort previous request only if no other subscribers are using it
+    if (abortController) {
+      const existing = inFlightRequests.get(key);
+      if (!existing || existing.refCount <= 1) {
+        abortController.abort();
+      }
+    }
     abortController = new AbortController();
     const { signal: abortSignal } = abortController;
 
     isValidating.set(true);
 
     const promise = fetcher(key, { signal: abortSignal });
-    inFlightRequests.set(key, { promise, timestamp: now });
+    inFlightRequests.set(key, { promise, timestamp: now, refCount: 1 });
 
     try {
       const result = await promise;
@@ -238,7 +244,11 @@ export function useSWR(key, fetcher, options = {}) {
       throw e;
     } finally {
       if (!abortSignal.aborted) isValidating.set(false);
-      inFlightRequests.delete(key);
+      const flight = inFlightRequests.get(key);
+      if (flight) {
+        flight.refCount--;
+        if (flight.refCount <= 0) inFlightRequests.delete(key);
+      }
     }
   }
 

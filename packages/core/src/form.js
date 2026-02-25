@@ -62,6 +62,7 @@ function createFormController(options = {}) {
   const isDirty = signal(false);
   const isSubmitting = signal(false);
   const isSubmitted = signal(false);
+  const isValidating = signal(false);
   const submitCount = signal(0);
 
   // Helper: get all current values as a plain object.
@@ -128,34 +129,42 @@ function createFormController(options = {}) {
   async function validate(fieldName) {
     if (!resolver) return true;
 
-    const result = await resolver(getAllValues(false));
-    const nextErrors = result?.errors || {};
+    isValidating.set(true);
+    try {
+      const result = await resolver(getAllValues(false));
+      const nextErrors = result?.errors || {};
 
-    if (fieldName) {
-      const nextError = nextErrors[fieldName] ?? null;
-      setFieldError(fieldName, nextError);
-      return !nextError;
-    } else {
-      replaceAllErrors(nextErrors);
-      return Object.keys(nextErrors).length === 0;
+      if (fieldName) {
+        const nextError = nextErrors[fieldName] ?? null;
+        setFieldError(fieldName, nextError);
+        return !nextError;
+      } else {
+        replaceAllErrors(nextErrors);
+        return Object.keys(nextErrors).length === 0;
+      }
+    } finally {
+      isValidating.set(false);
     }
   }
 
   // Register a field — only subscribes to THIS field's signal
   function register(name, options = {}) {
     const fieldSig = getFieldSignal(name);
-    return {
-      name,
-      // Use getter so value is always fresh, even if register result is cached
-      get value() { return fieldSig(); },
-      onInput: (e) => {
-        const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-        setValue(name, value);
+    const isCheckbox = options.type === 'checkbox' || options.type === 'radio';
 
-        if (mode === 'onChange' || (isSubmitted.peek() && reValidateMode === 'onChange')) {
-          validate(name);
-        }
-      },
+    const handler = (e) => {
+      const value = (e.target.type === 'checkbox' || e.target.type === 'radio')
+        ? e.target.checked
+        : e.target.value;
+      setValue(name, value);
+
+      if (mode === 'onChange' || (isSubmitted.peek() && reValidateMode === 'onChange')) {
+        validate(name);
+      }
+    };
+
+    const result = {
+      name,
       onBlur: () => {
         getTouchedSignal(name).set(true);
 
@@ -166,6 +175,24 @@ function createFormController(options = {}) {
       onFocus: () => {},
       ref: options.ref,
     };
+
+    if (isCheckbox) {
+      // Checkbox/radio: use checked prop + onchange event
+      Object.defineProperty(result, 'checked', {
+        get() { return !!fieldSig(); },
+        enumerable: true,
+      });
+      result.onchange = handler;
+    } else {
+      // Text/select/textarea: use value prop + oninput event
+      Object.defineProperty(result, 'value', {
+        get() { return fieldSig(); },
+        enumerable: true,
+      });
+      result.oninput = handler;
+    }
+
+    return result;
   }
 
   // Set single field value — only triggers re-render for components reading this field
@@ -273,6 +300,7 @@ function createFormController(options = {}) {
       },
       isDirty: () => isDirty(),
       isValid,
+      isValidating: () => isValidating(),
       isSubmitting: () => isSubmitting(),
       isSubmitted: () => isSubmitted(),
       submitCount: () => submitCount(),

@@ -279,7 +279,7 @@ function scheduleMicrotask() {
 
 function flush() {
   let iterations = 0;
-  while (pendingEffects.length > 0 && iterations < 100) {
+  while (pendingEffects.length > 0 && iterations < 25) {
     const batch = pendingEffects;
     pendingEffects = [];
     for (let i = 0; i < batch.length; i++) {
@@ -289,12 +289,12 @@ function flush() {
     }
     iterations++;
   }
-  if (iterations >= 100) {
+  if (iterations >= 25) {
     if (__DEV__) {
       const remaining = pendingEffects.slice(0, 3);
       const effectNames = remaining.map(e => e.fn?.name || e.fn?.toString().slice(0, 60) || '(anonymous)');
       console.warn(
-        `[what] Possible infinite effect loop detected (100 iterations). ` +
+        `[what] Possible infinite effect loop detected (25 iterations). ` +
         `Likely cause: an effect writes to a signal it also reads, creating a cycle. ` +
         `Use untrack() to read signals without subscribing. ` +
         `Looping effects: ${effectNames.join(', ')}`

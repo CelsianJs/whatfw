@@ -77,7 +77,9 @@ export function spring(initialValue, options = {}) {
 
   function set(newTarget) {
     target.set(newTarget);
-    if (!isAnimating.peek()) {
+    // Use rafId check instead of isAnimating signal — signal may not have flushed
+    // after a synchronous stop() call, causing duplicate animation frames
+    if (rafId === null) {
       isAnimating.set(true);
       lastTime = null;
       rafId = requestAnimationFrame(tick);
