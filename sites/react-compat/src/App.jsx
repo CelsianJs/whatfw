@@ -184,7 +184,7 @@ function Hero() {
     <section class="hero">
       <div class="container">
         <div class="hero-pill"><span class="dot"></span> what-react v0.1.0</div>
-        <h1><span class="grad">100+ React Libraries.</span><br />Zero Changes.</h1>
+        <h1><span class="grad">90+ React Libraries.</span><br />Zero Changes.</h1>
         <p class="hero-sub">
           What Framework's <code>what-react</code> compat layer lets you use the React ecosystem
           on a signals-powered engine. Same imports. Same API. Faster runtime.
@@ -193,7 +193,7 @@ function Hero() {
           <Counter target={90} suffix="" colorClass="c-blue">Confirmed Working</Counter>
           <Counter target={96} suffix="+" colorClass="c-cyan">Total Compatible</Counter>
           <Counter target={0} suffix="" colorClass="c-purple">Lines Changed</Counter>
-          <Counter target={500} suffix="M+" colorClass="c-green">Downloads/Week</Counter>
+          <Counter target={500} suffix="M+" colorClass="c-green">Ecosystem Downloads/wk</Counter>
         </div>
       </div>
     </section>

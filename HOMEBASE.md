@@ -7,7 +7,7 @@
 
 | Framework | Role | Repo | Packages | Site |
 |-----------|------|------|----------|------|
-| **What** | Frontend (signals, reactivity, components) | `zvndev/what-fw` | `what-core`, `what-framework`, `what-router`, `what-server`, `what-compiler` | whatframework.dev |
+| **What** | Frontend (signals, reactivity, components) | `zvndev/what-fw` | `what-core`, `what-framework`, `what-router`, `what-server`, `what-compiler` | whatfw.com |
 | **CelsianJS** | Backend (server, RPC, caching, tasks) | `CelsianJs/*` | `@celsian/server`, `@celsian/rpc`, `@celsian/cache`, `@celsian/schema`, `@celsian/adapter-*` | — |
 | **ThenJS** | Meta-framework (What + CelsianJS = Next.js) | lives in `thenjs/` within what-fw | `thenjs`, `@thenjs/build`, `create-then` | thenjs.dev |
 
@@ -35,7 +35,7 @@ what-fw/
 │   └── benchmarks/        # Browser benchmark visualization (Vercel)
 │
 ├── docs/                  # Markdown docs (API, Architecture, Gotchas, TypeScript, etc.)
-├── docs-site/             # Landing page + docs (whatframework.dev, Vercel)
+├── docs-site/             # Landing page + docs (whatfw.com, Vercel)
 │
 ├── benchmark/             # Performance test suite (Node.js, no browser)
 ├── scripts/               # Build, deploy, publish, codemods
@@ -110,7 +110,7 @@ All packages at **version 0.5.2**. Published to npm under their package names.
 - **Purpose**: Production-grade project management dashboard demo
 
 ### Docs Site — `docs-site/`
-- **URL**: whatframework.dev
+- **URL**: whatfw.com
 - **Deploy**: Vercel (ZVN DEV team)
 - **Build**: Static HTML (no build step)
 - **Run locally**: Just open `docs-site/index.html`
@@ -206,7 +206,7 @@ Static HTML page deployed to Vercel. Runs benchmarks in the browser for real-wor
 
 | Site | Directory | URL |
 |------|-----------|-----|
-| What Framework Landing | `docs-site/` | whatframework.dev |
+| What Framework Landing | `docs-site/` | whatfw.com |
 | Benchmark Visualization | `sites/benchmarks/` | (Vercel subdomain) |
 | ThenJS Docs | `thenjs/docs-site/` | thenjs.dev |
 
@@ -256,7 +256,7 @@ Static HTML page deployed to Vercel. Runs benchmarks in the browser for real-wor
 All What Framework packages point to:
 - **Repository**: `https://github.com/zvndev/what-fw`
 - **Bugs**: `https://github.com/zvndev/what-fw/issues`
-- **Homepage**: `https://whatframework.dev`
+- **Homepage**: `https://whatfw.com`
 
 All ThenJS packages point to:
 - **Repository**: `https://github.com/zvndev/thenjs`
@@ -275,7 +275,7 @@ Track these items when starting a new session:
 - [ ] VSCode extension — needs `vsce publish` to marketplace
 
 ### Docs & Sites
-- [ ] docs-site (whatframework.dev) — add ESLint, DevTools, TypeScript sections
+- [ ] docs-site (whatfw.com) — add ESLint, DevTools, TypeScript sections
 - [ ] ThenJS docs (thenjs.dev) — update CelsianJS backend references
 - [ ] README.md — add badges for new packages (eslint-plugin, devtools)
 

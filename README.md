@@ -1,5 +1,7 @@
 # What Framework
 
+**[whatfw.com](https://whatfw.com)** · [React Compat](https://react.whatfw.com) · [Benchmarks](https://benchmarks.whatfw.com) · [GitHub](https://github.com/zvndev/what-fw)
+
 The closest framework to vanilla JS, with a React-familiar authoring experience.
 
 - Fine-grained reactivity (signals)

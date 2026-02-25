@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>batch() — What Framework</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <nav>
+    <div class="nav-left">
+      <a href="../" class="logo">What <span class="logo-badge">v0.5.3</span></a>
+      <div class="nav-links">
+        <a href="../learn/">Learn</a>
+        <a href="./" class="active">Reference</a>
+        <a href="../tutorial/">Tutorial</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">Reactivity</div>
+        <ul class="sidebar-links">
+          <li><a href="./signal.html">signal()</a></li>
+          <li><a href="./computed.html">computed()</a></li>
+          <li><a href="./effect.html">effect()</a></li>
+          <li><a href="./batch.html" class="active">batch()</a></li>
+          <li><a href="./untrack.html">untrack()</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">Components</div>
+        <ul class="sidebar-links">
+          <li><a href="./h.html">h()</a></li>
+          <li><a href="./mount.html">mount()</a></li>
+          <li><a href="./Show.html">&lt;Show&gt;</a></li>
+          <li><a href="./For.html">&lt;For&gt;</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="content-wrapper">
+        <div class="content-inner">
+          <h1>batch()</h1>
+          <p class="subtitle">Group multiple signal writes so that effects run only once at the end.</p>
+
+<pre><code><span class="function">batch</span>(fn)</code></pre>
+
+          <h2 id="parameters">Parameters</h2>
+          <table>
+            <thead>
+              <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>fn</code></td>
+                <td><code>() =&gt; void</code></td>
+                <td>A function containing multiple signal writes. All dependent effects are deferred until the function completes.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2 id="returns">Returns</h2>
+          <p><code>void</code>. The function does not return a value.</p>
+
+          <h2 id="usage">Usage</h2>
+
+          <h3>Basic Batching</h3>
+<pre><code><span class="keyword">import</span> { signal, effect, batch } <span class="keyword">from</span> <span class="string">'what-framework'</span>;
+
+<span class="keyword">const</span> firstName = <span class="function">signal</span>(<span class="string">'John'</span>);
+<span class="keyword">const</span> lastName = <span class="function">signal</span>(<span class="string">'Doe'</span>);
+
+<span class="function">effect</span>(() =&gt; {
+  console.log(<span class="string">`Name: ${firstName()} ${lastName()}`</span>);
+});
+
+<span class="comment">// Without batch: effect runs twice</span>
+firstName.set(<span class="string">'Jane'</span>);  <span class="comment">// effect runs</span>
+lastName.set(<span class="string">'Smith'</span>);  <span class="comment">// effect runs again</span>
+
+<span class="comment">// With batch: effect runs once</span>
+<span class="function">batch</span>(() =&gt; {
+  firstName.set(<span class="string">'Bob'</span>);
+  lastName.set(<span class="string">'Jones'</span>);
+});  <span class="comment">// effect runs once with "Bob Jones"</span></code></pre>
+
+          <h3>Form State Updates</h3>
+<pre><code><span class="keyword">const</span> formData = <span class="function">signal</span>({ name: <span class="string">''</span>, email: <span class="string">''</span> });
+<span class="keyword">const</span> errors = <span class="function">signal</span>({});
+<span class="keyword">const</span> submitting = <span class="function">signal</span>(<span class="keyword">false</span>);
+
+<span class="keyword">function</span> <span class="function">resetForm</span>() {
+  <span class="function">batch</span>(() =&gt; {
+    formData.set({ name: <span class="string">''</span>, email: <span class="string">''</span> });
+    errors.set({});
+    submitting.set(<span class="keyword">false</span>);
+  });
+}</code></pre>
+
+          <h3>Nested Batching</h3>
+<pre><code><span class="comment">// Batch calls can be nested — effects flush</span>
+<span class="comment">// only when the outermost batch completes</span>
+<span class="function">batch</span>(() =&gt; {
+  firstName.set(<span class="string">'Alice'</span>);
+
+  <span class="function">batch</span>(() =&gt; {
+    lastName.set(<span class="string">'Wonder'</span>);
+  });
+  <span class="comment">// inner batch doesn't flush yet</span>
+});
+<span class="comment">// NOW the effect runs once</span></code></pre>
+
+          <h2 id="how-it-works">How It Works</h2>
+          <p>Internally, <code>batch()</code> increments a depth counter. While the counter is above zero, all signal notifications queue pending effects instead of scheduling them. When the outermost <code>batch()</code> completes, the counter returns to zero and all queued effects are flushed synchronously.</p>
+
+          <h2 id="notes">Notes</h2>
+          <ul>
+            <li>Effects already batch naturally via microtask scheduling. If multiple signal writes happen in the same synchronous block, effects run once in the next microtask. Use <code>batch()</code> when you need to guarantee effects see a consistent state across multiple writes.</li>
+            <li>Batch calls can be nested. Effects only flush when the outermost batch completes.</li>
+            <li>The flush inside batch is synchronous, unlike the default microtask scheduling. This can be useful when you need effects to run before continuing.</li>
+            <li>If the function passed to <code>batch()</code> throws, the batch depth is still decremented correctly and pending effects are still flushed.</li>
+          </ul>
+
+          <div class="page-nav">
+            <a href="./effect.html">
+              <span class="label">Previous</span>
+              <span class="title">effect()</span>
+            </a>
+            <a href="./untrack.html" class="next">
+              <span class="label">Next</span>
+              <span class="title">untrack()</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

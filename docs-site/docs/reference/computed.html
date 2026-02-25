@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>computed() — What Framework</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <nav>
+    <div class="nav-left">
+      <a href="../" class="logo">What <span class="logo-badge">v0.5.3</span></a>
+      <div class="nav-links">
+        <a href="../learn/">Learn</a>
+        <a href="./" class="active">Reference</a>
+        <a href="../tutorial/">Tutorial</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">Reactivity</div>
+        <ul class="sidebar-links">
+          <li><a href="./signal.html">signal()</a></li>
+          <li><a href="./computed.html" class="active">computed()</a></li>
+          <li><a href="./effect.html">effect()</a></li>
+          <li><a href="./batch.html">batch()</a></li>
+          <li><a href="./untrack.html">untrack()</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">Components</div>
+        <ul class="sidebar-links">
+          <li><a href="./h.html">h()</a></li>
+          <li><a href="./mount.html">mount()</a></li>
+          <li><a href="./Show.html">&lt;Show&gt;</a></li>
+          <li><a href="./For.html">&lt;For&gt;</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="content-wrapper">
+        <div class="content-inner">
+          <h1>computed()</h1>
+          <p class="subtitle">Create a derived signal that automatically recomputes when its dependencies change.</p>
+
+<pre><code><span class="keyword">const</span> derived = <span class="function">computed</span>(fn)</code></pre>
+
+          <h2 id="parameters">Parameters</h2>
+          <table>
+            <thead>
+              <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>fn</code></td>
+                <td><code>() =&gt; T</code></td>
+                <td>A function that computes the derived value. All signals read inside this function are automatically tracked as dependencies.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2 id="returns">Returns</h2>
+          <p>A read-only signal with the following methods:</p>
+
+          <table>
+            <thead>
+              <tr><th>Method</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>derived()</code></td>
+                <td>Read the current computed value (creates subscription in reactive contexts)</td>
+              </tr>
+              <tr>
+                <td><code>derived.peek()</code></td>
+                <td>Read the value without creating a subscription</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2 id="usage">Usage</h2>
+
+          <h3>Basic Derived Value</h3>
+<pre><code><span class="keyword">import</span> { signal, computed } <span class="keyword">from</span> <span class="string">'what-framework'</span>;
+
+<span class="keyword">const</span> firstName = <span class="function">signal</span>(<span class="string">'John'</span>);
+<span class="keyword">const</span> lastName = <span class="function">signal</span>(<span class="string">'Doe'</span>);
+
+<span class="keyword">const</span> fullName = <span class="function">computed</span>(() =&gt;
+  <span class="string">`${firstName()} ${lastName()}`</span>
+);
+
+console.log(fullName());  <span class="comment">// "John Doe"</span>
+
+firstName.set(<span class="string">'Jane'</span>);
+console.log(fullName());  <span class="comment">// "Jane Doe"</span></code></pre>
+
+          <h3>Filtering and Transforming Data</h3>
+<pre><code><span class="keyword">const</span> todos = <span class="function">signal</span>([
+  { text: <span class="string">'Learn What'</span>, done: <span class="keyword">true</span> },
+  { text: <span class="string">'Build app'</span>, done: <span class="keyword">false</span> },
+  { text: <span class="string">'Deploy'</span>, done: <span class="keyword">false</span> },
+]);
+
+<span class="keyword">const</span> remaining = <span class="function">computed</span>(() =&gt;
+  todos().filter(t =&gt; !t.done)
+);
+
+<span class="keyword">const</span> count = <span class="function">computed</span>(() =&gt; remaining().length);
+
+console.log(count());  <span class="comment">// 2</span></code></pre>
+
+          <h3>In Components</h3>
+<pre><code><span class="keyword">function</span> <span class="function">PriceDisplay</span>({ price, taxRate }) {
+  <span class="keyword">const</span> total = <span class="function">computed</span>(() =&gt;
+    price() * (<span class="number">1</span> + taxRate())
+  );
+
+  <span class="keyword">return</span> &lt;span&gt;Total: ${() =&gt; total().toFixed(<span class="number">2</span>)}&lt;/span&gt;;
+}</code></pre>
+
+          <h3>Chaining Computeds</h3>
+<pre><code><span class="keyword">const</span> items = <span class="function">signal</span>([<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>]);
+<span class="keyword">const</span> doubled = <span class="function">computed</span>(() =&gt; items().map(x =&gt; x * <span class="number">2</span>));
+<span class="keyword">const</span> sum = <span class="function">computed</span>(() =&gt; doubled().reduce((a, b) =&gt; a + b, <span class="number">0</span>));
+
+console.log(sum());  <span class="comment">// 120</span></code></pre>
+
+          <h2 id="notes">Notes</h2>
+          <ul>
+            <li><strong>Lazy evaluation</strong> -- Computed values do not run until first read. They only recompute when a dependency changes AND the value is read.</li>
+            <li><strong>Cached</strong> -- Repeated reads return the cached value without recomputing, until a dependency changes.</li>
+            <li><strong>Read-only</strong> -- Computed signals have no <code>.set()</code> method. They derive their value entirely from other signals.</li>
+            <li><strong>Auto-tracked dependencies</strong> -- Any signal read inside the function is tracked automatically. Conditional reads are tracked only when that branch executes.</li>
+            <li>Use <a href="./signal.html">signal()</a> for writable state, and computed() for derived values. Avoid using <a href="./effect.html">effect()</a> to sync a signal with a computed expression.</li>
+          </ul>
+
+          <div class="page-nav">
+            <a href="./signal.html">
+              <span class="label">Previous</span>
+              <span class="title">signal()</span>
+            </a>
+            <a href="./effect.html" class="next">
+              <span class="label">Next</span>
+              <span class="title">effect()</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

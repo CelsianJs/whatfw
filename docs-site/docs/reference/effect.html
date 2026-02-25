@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>effect() — What Framework</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <nav>
+    <div class="nav-left">
+      <a href="../" class="logo">What <span class="logo-badge">v0.5.3</span></a>
+      <div class="nav-links">
+        <a href="../learn/">Learn</a>
+        <a href="./" class="active">Reference</a>
+        <a href="../tutorial/">Tutorial</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">Reactivity</div>
+        <ul class="sidebar-links">
+          <li><a href="./signal.html">signal()</a></li>
+          <li><a href="./computed.html">computed()</a></li>
+          <li><a href="./effect.html" class="active">effect()</a></li>
+          <li><a href="./batch.html">batch()</a></li>
+          <li><a href="./untrack.html">untrack()</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">Components</div>
+        <ul class="sidebar-links">
+          <li><a href="./h.html">h()</a></li>
+          <li><a href="./mount.html">mount()</a></li>
+          <li><a href="./Show.html">&lt;Show&gt;</a></li>
+          <li><a href="./For.html">&lt;For&gt;</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="content-wrapper">
+        <div class="content-inner">
+          <h1>effect()</h1>
+          <p class="subtitle">Run a side-effect function that automatically re-runs when its signal dependencies change.</p>
+
+<pre><code><span class="keyword">const</span> dispose = <span class="function">effect</span>(fn, opts?)</code></pre>
+
+          <h2 id="parameters">Parameters</h2>
+          <table>
+            <thead>
+              <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>fn</code></td>
+                <td><code>() =&gt; void | (() =&gt; void)</code></td>
+                <td>The effect function. All signals read inside are tracked. May optionally return a cleanup function.</td>
+              </tr>
+              <tr>
+                <td><code>opts</code></td>
+                <td><code>{ stable?: boolean }</code></td>
+                <td>Optional. When <code>stable: true</code>, the effect skips re-tracking dependencies on re-run (assumes deps never change after first run).</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2 id="returns">Returns</h2>
+          <p>A <code>dispose</code> function. Calling it stops the effect and runs any cleanup.</p>
+
+          <table>
+            <thead>
+              <tr><th>Return</th><th>Type</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>dispose</code></td>
+                <td><code>() =&gt; void</code></td>
+                <td>Disposes the effect, unsubscribes from all tracked signals, and runs the cleanup function (if one was returned).</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2 id="usage">Usage</h2>
+
+          <h3>Basic Usage</h3>
+<pre><code><span class="keyword">import</span> { signal, effect } <span class="keyword">from</span> <span class="string">'what-framework'</span>;
+
+<span class="keyword">const</span> count = <span class="function">signal</span>(<span class="number">0</span>);
+
+<span class="comment">// Runs immediately, then re-runs when count changes</span>
+<span class="function">effect</span>(() =&gt; {
+  console.log(<span class="string">'Count:'</span>, count());
+});
+
+count.set(<span class="number">5</span>);  <span class="comment">// Logs: "Count: 5"</span></code></pre>
+
+          <h3>With Cleanup</h3>
+<pre><code><span class="keyword">const</span> url = <span class="function">signal</span>(<span class="string">'/api/data'</span>);
+
+<span class="function">effect</span>(() =&gt; {
+  <span class="keyword">const</span> controller = <span class="keyword">new</span> AbortController();
+
+  fetch(url(), { signal: controller.signal })
+    .then(r =&gt; r.json())
+    .then(console.log);
+
+  <span class="comment">// Cleanup: abort the request when effect re-runs or disposes</span>
+  <span class="keyword">return</span> () =&gt; controller.abort();
+});</code></pre>
+
+          <h3>Disposing an Effect</h3>
+<pre><code><span class="keyword">const</span> count = <span class="function">signal</span>(<span class="number">0</span>);
+
+<span class="keyword">const</span> dispose = <span class="function">effect</span>(() =&gt; {
+  console.log(count());
+});
+
+count.set(<span class="number">1</span>);  <span class="comment">// Logs: 1</span>
+
+dispose();
+
+count.set(<span class="number">2</span>);  <span class="comment">// Nothing happens — effect is disposed</span></code></pre>
+
+          <h3>Event Listener Pattern</h3>
+<pre><code><span class="function">effect</span>(() =&gt; {
+  <span class="keyword">const</span> handler = () =&gt; console.log(<span class="string">'resize'</span>);
+  window.addEventListener(<span class="string">'resize'</span>, handler);
+
+  <span class="keyword">return</span> () =&gt; {
+    window.removeEventListener(<span class="string">'resize'</span>, handler);
+  };
+});</code></pre>
+
+          <h3>Document Title Sync</h3>
+<pre><code><span class="keyword">const</span> title = <span class="function">signal</span>(<span class="string">'My App'</span>);
+
+<span class="function">effect</span>(() =&gt; {
+  document.title = title();
+});</code></pre>
+
+          <h2 id="scheduling">Scheduling</h2>
+          <p>Effects are scheduled asynchronously via microtask. When a signal changes, its dependent effects are queued and flushed together in a microtask. This means updates are batched naturally when multiple signals change in the same synchronous block.</p>
+<pre><code><span class="keyword">const</span> a = <span class="function">signal</span>(<span class="number">1</span>);
+<span class="keyword">const</span> b = <span class="function">signal</span>(<span class="number">2</span>);
+
+<span class="function">effect</span>(() =&gt; {
+  console.log(a() + b());
+});
+
+<span class="comment">// Both writes happen synchronously — effect runs once via microtask</span>
+a.set(<span class="number">10</span>);
+b.set(<span class="number">20</span>);
+<span class="comment">// Logs: 30 (not 12 then 30)</span></code></pre>
+
+          <h2 id="notes">Notes</h2>
+          <ul>
+            <li>Effects run immediately on creation (synchronously), then re-run asynchronously via microtask when dependencies change.</li>
+            <li>Only signals actually read during execution are tracked. Conditional branches that are not taken do not create subscriptions.</li>
+            <li>If an effect reads and writes the same signal, it can cause infinite loops. What detects this and warns after 100 iterations. Use <a href="./untrack.html">untrack()</a> to read without subscribing.</li>
+            <li>Effects created inside a component are automatically disposed when the component unmounts.</li>
+            <li>For derived values, prefer <a href="./computed.html">computed()</a> over setting a signal inside an effect.</li>
+            <li>The cleanup function runs before each re-execution and on final disposal.</li>
+          </ul>
+
+          <div class="page-nav">
+            <a href="./computed.html">
+              <span class="label">Previous</span>
+              <span class="title">computed()</span>
+            </a>
+            <a href="./batch.html" class="next">
+              <span class="label">Next</span>
+              <span class="title">batch()</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

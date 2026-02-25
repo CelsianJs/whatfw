@@ -1,7 +1,7 @@
 {
   "name": "what-devtools",
   "version": "0.5.3",
-  "description": "Dev tools for What Framework — signal inspector, component tree, effect graph",
+  "description": "Dev tools for What Framework \u2014 signal inspector, component tree, effect graph",
   "type": "module",
   "main": "src/index.js",
   "exports": {
@@ -31,5 +31,5 @@
   "bugs": {
     "url": "https://github.com/zvndev/what-fw/issues"
   },
-  "homepage": "https://whatframework.dev"
+  "homepage": "https://whatfw.com"
 }

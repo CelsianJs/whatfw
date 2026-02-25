@@ -98,16 +98,16 @@ console.log(name());  <span class="comment">// "Alice"</span>
 <span class="comment">// Read without subscribing</span>
 console.log(name.peek());  <span class="comment">// "Alice" (no subscription)</span></code></pre>
 
-          <p>In JSX, you can use signals directly or call them explicitly. The reconciler handles both forms:</p>
+          <p>In JSX, you can use signals directly or call them explicitly. The compiler detects reactive expressions (function calls) and auto-wraps them:</p>
 
-<pre><code><span class="comment">// Both work in JSX:</span>
+<pre><code><span class="comment">// All work in JSX:</span>
 &lt;span&gt;{name}&lt;/span&gt;      <span class="comment">// pass signal directly — reconciler reads it</span>
-&lt;span&gt;{name()}&lt;/span&gt;    <span class="comment">// explicit read — value at render time</span>
-&lt;span&gt;{() =&gt; name()}&lt;/span&gt;  <span class="comment">// reactive wrapper — updates when signal changes</span></code></pre>
+&lt;span&gt;{name()}&lt;/span&gt;    <span class="comment">// compiler auto-wraps → () =&gt; name()</span>
+&lt;span&gt;{() =&gt; name()}&lt;/span&gt;  <span class="comment">// explicit reactive wrapper — also works</span></code></pre>
 
-          <div class="callout callout-note">
-            <p class="callout-title">No Compiler Auto-Wrapping</p>
-            <p>The Babel plugin does not automatically wrap signal reads. Use the <code>() =&gt;</code> arrow wrapper in JSX when you need fine-grained reactive updates for a specific text node or attribute.</p>
+          <div class="callout callout-info">
+            <p class="callout-title">Compiler Auto-Wrapping</p>
+            <p>The What compiler detects expressions containing function calls (like <code>count()</code>) in JSX children and attributes, and automatically wraps them in reactive arrow functions. You don't need to write <code>{() =&gt; count()}</code> manually — just <code>{count()}</code> is enough. The manual form still works and is equivalent.</p>
           </div>
 
           <div class="callout callout-note">

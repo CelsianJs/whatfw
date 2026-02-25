@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>untrack() — What Framework</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <nav>
+    <div class="nav-left">
+      <a href="../" class="logo">What <span class="logo-badge">v0.5.3</span></a>
+      <div class="nav-links">
+        <a href="../learn/">Learn</a>
+        <a href="./" class="active">Reference</a>
+        <a href="../tutorial/">Tutorial</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">Reactivity</div>
+        <ul class="sidebar-links">
+          <li><a href="./signal.html">signal()</a></li>
+          <li><a href="./computed.html">computed()</a></li>
+          <li><a href="./effect.html">effect()</a></li>
+          <li><a href="./batch.html">batch()</a></li>
+          <li><a href="./untrack.html" class="active">untrack()</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">Components</div>
+        <ul class="sidebar-links">
+          <li><a href="./h.html">h()</a></li>
+          <li><a href="./mount.html">mount()</a></li>
+          <li><a href="./Show.html">&lt;Show&gt;</a></li>
+          <li><a href="./For.html">&lt;For&gt;</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="content-wrapper">
+        <div class="content-inner">
+          <h1>untrack()</h1>
+          <p class="subtitle">Read signals without creating reactive subscriptions.</p>
+
+<pre><code><span class="keyword">const</span> value = <span class="function">untrack</span>(fn)</code></pre>
+
+          <h2 id="parameters">Parameters</h2>
+          <table>
+            <thead>
+              <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>fn</code></td>
+                <td><code>() =&gt; T</code></td>
+                <td>A function in which signal reads do not create subscriptions. The function is called synchronously.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2 id="returns">Returns</h2>
+          <p>The return value of <code>fn</code>.</p>
+
+          <table>
+            <thead>
+              <tr><th>Return</th><th>Type</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>value</code></td>
+                <td><code>T</code></td>
+                <td>Whatever <code>fn</code> returns. Signals read inside <code>fn</code> return their current values, but the surrounding effect or computed does not subscribe to them.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2 id="usage">Usage</h2>
+
+          <h3>Reading Without Subscribing</h3>
+<pre><code><span class="keyword">import</span> { signal, effect, untrack } <span class="keyword">from</span> <span class="string">'what-framework'</span>;
+
+<span class="keyword">const</span> count = <span class="function">signal</span>(<span class="number">0</span>);
+<span class="keyword">const</span> multiplier = <span class="function">signal</span>(<span class="number">2</span>);
+
+<span class="function">effect</span>(() =&gt; {
+  <span class="comment">// Re-runs when count changes</span>
+  <span class="comment">// Does NOT re-run when multiplier changes</span>
+  <span class="keyword">const</span> result = count() * <span class="function">untrack</span>(() =&gt; multiplier());
+  console.log(result);
+});</code></pre>
+
+          <h3>Preventing Infinite Loops</h3>
+<pre><code><span class="keyword">const</span> items = <span class="function">signal</span>([]);
+<span class="keyword">const</span> log = <span class="function">signal</span>([]);
+
+<span class="function">effect</span>(() =&gt; {
+  <span class="keyword">const</span> currentItems = items();
+  <span class="comment">// Read log without subscribing to avoid cycle</span>
+  <span class="keyword">const</span> currentLog = <span class="function">untrack</span>(() =&gt; log());
+  log.set([...currentLog, <span class="string">`Items changed: ${currentItems.length}`</span>]);
+});</code></pre>
+
+          <h3>Event Handlers</h3>
+          <p>What wraps all event handlers in <code>untrack()</code> automatically, so signal reads in event handlers never create subscriptions:</p>
+<pre><code><span class="keyword">function</span> <span class="function">Counter</span>() {
+  <span class="keyword">const</span> count = <span class="function">signal</span>(<span class="number">0</span>);
+  <span class="keyword">const</span> step = <span class="function">signal</span>(<span class="number">1</span>);
+
+  <span class="keyword">return</span> (
+    &lt;button onClick={() =&gt; {
+      <span class="comment">// step() is read here, but since event handlers</span>
+      <span class="comment">// are automatically untracked, no subscription is created</span>
+      count.set(c =&gt; c + step());
+    }}&gt;
+      Count: {count()}
+    &lt;/button&gt;
+  );
+}</code></pre>
+
+          <h3>Comparison With peek()</h3>
+<pre><code><span class="keyword">const</span> count = <span class="function">signal</span>(<span class="number">0</span>);
+
+<span class="function">effect</span>(() =&gt; {
+  <span class="comment">// These are equivalent:</span>
+  <span class="keyword">const</span> a = <span class="function">untrack</span>(() =&gt; count());
+  <span class="keyword">const</span> b = count.peek();
+  <span class="comment">// Both read the value without subscribing</span>
+});</code></pre>
+
+          <h2 id="how-it-works">How It Works</h2>
+          <p><code>untrack()</code> temporarily sets the current effect tracking context to <code>null</code> while executing <code>fn</code>. Signal reads check this context to decide whether to add a subscriber. With the context cleared, no subscriptions are created. After <code>fn</code> completes, the original context is restored.</p>
+
+          <h2 id="notes">Notes</h2>
+          <ul>
+            <li><code>untrack()</code> is functionally equivalent to <code>signal.peek()</code> for a single signal, but works with any number of signal reads inside the callback.</li>
+            <li>Use <code>peek()</code> when reading a single known signal. Use <code>untrack()</code> when calling a function that may read multiple signals internally.</li>
+            <li>Event handlers in JSX are automatically wrapped in <code>untrack()</code> by What's DOM layer.</li>
+            <li>The callback is executed synchronously. It does not defer or schedule anything.</li>
+            <li>Useful for breaking read-write cycles where an effect needs to read a signal that it also writes to.</li>
+          </ul>
+
+          <div class="page-nav">
+            <a href="./batch.html">
+              <span class="label">Previous</span>
+              <span class="title">batch()</span>
+            </a>
+            <a href="./h.html" class="next">
+              <span class="label">Next</span>
+              <span class="title">h()</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

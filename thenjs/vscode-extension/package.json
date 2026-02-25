@@ -39,7 +39,7 @@
     "type": "git",
     "url": "https://github.com/zvndev/thenjs"
   },
-  "homepage": "https://whatframework.dev",
+  "homepage": "https://whatfw.com",
   "icon": "icon.png",
   "activationEvents": [
     "onLanguage:typescriptreact",

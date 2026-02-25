@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>mount() — What Framework</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <nav>
+    <div class="nav-left">
+      <a href="../" class="logo">What <span class="logo-badge">v0.5.3</span></a>
+      <div class="nav-links">
+        <a href="../learn/">Learn</a>
+        <a href="./" class="active">Reference</a>
+        <a href="../tutorial/">Tutorial</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">Reactivity</div>
+        <ul class="sidebar-links">
+          <li><a href="./signal.html">signal()</a></li>
+          <li><a href="./computed.html">computed()</a></li>
+          <li><a href="./effect.html">effect()</a></li>
+          <li><a href="./batch.html">batch()</a></li>
+          <li><a href="./untrack.html">untrack()</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">Components</div>
+        <ul class="sidebar-links">
+          <li><a href="./h.html">h()</a></li>
+          <li><a href="./mount.html" class="active">mount()</a></li>
+          <li><a href="./Show.html">&lt;Show&gt;</a></li>
+          <li><a href="./For.html">&lt;For&gt;</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="content-wrapper">
+        <div class="content-inner">
+          <h1>mount()</h1>
+          <p class="subtitle">Mount a component tree into a DOM container.</p>
+
+<pre><code><span class="keyword">const</span> unmount = <span class="function">mount</span>(vnode, container)</code></pre>
+
+          <h2 id="parameters">Parameters</h2>
+          <table>
+            <thead>
+              <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>vnode</code></td>
+                <td><code>VNode</code></td>
+                <td>A virtual DOM node, typically created by JSX or <a href="./h.html">h()</a>.</td>
+              </tr>
+              <tr>
+                <td><code>container</code></td>
+                <td><code>Element | string</code></td>
+                <td>The DOM element to mount into. If a string is provided, it is used as a CSS selector passed to <code>document.querySelector()</code>.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2 id="returns">Returns</h2>
+          <p>An <code>unmount</code> function that disposes all reactive effects and clears the container.</p>
+
+          <table>
+            <thead>
+              <tr><th>Return</th><th>Type</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>unmount</code></td>
+                <td><code>() =&gt; void</code></td>
+                <td>Disposes all component effects, runs cleanup callbacks, and empties the container element.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2 id="usage">Usage</h2>
+
+          <h3>Basic Mount</h3>
+<pre><code><span class="keyword">import</span> { mount } <span class="keyword">from</span> <span class="string">'what-framework'</span>;
+
+<span class="keyword">function</span> <span class="function">App</span>() {
+  <span class="keyword">return</span> &lt;h1&gt;Hello, World!&lt;/h1&gt;;
+}
+
+<span class="function">mount</span>(&lt;App /&gt;, <span class="string">'#app'</span>);</code></pre>
+
+          <h3>With a DOM Element</h3>
+<pre><code><span class="keyword">const</span> container = document.getElementById(<span class="string">'root'</span>);
+<span class="function">mount</span>(&lt;App /&gt;, container);</code></pre>
+
+          <h3>Unmounting</h3>
+<pre><code><span class="keyword">const</span> unmount = <span class="function">mount</span>(&lt;App /&gt;, <span class="string">'#app'</span>);
+
+<span class="comment">// Later: clean up everything</span>
+unmount();</code></pre>
+
+          <h3>Re-mounting</h3>
+<pre><code><span class="comment">// mount() automatically cleans up any previous mount</span>
+<span class="comment">// in the same container before rendering the new tree.</span>
+<span class="function">mount</span>(&lt;AppV1 /&gt;, <span class="string">'#app'</span>);
+
+<span class="comment">// This disposes AppV1 and mounts AppV2</span>
+<span class="function">mount</span>(&lt;AppV2 /&gt;, <span class="string">'#app'</span>);</code></pre>
+
+          <h3>Typical Entry Point</h3>
+<pre><code><span class="comment">// src/main.jsx — the standard entry point</span>
+<span class="keyword">import</span> { mount } <span class="keyword">from</span> <span class="string">'what-framework'</span>;
+<span class="keyword">import</span> { App } <span class="keyword">from</span> <span class="string">'./App'</span>;
+
+<span class="function">mount</span>(&lt;App /&gt;, document.getElementById(<span class="string">'app'</span>));</code></pre>
+
+          <h2 id="how-it-works">How It Works</h2>
+          <ol>
+            <li>Disposes any existing component tree in the container (via <code>disposeTree</code>)</li>
+            <li>Clears the container's content</li>
+            <li>Converts the VNode into real DOM nodes (via <code>createDOM</code>)</li>
+            <li>Appends the resulting DOM to the container</li>
+          </ol>
+          <p>The returned <code>unmount</code> function reverses this: it walks the container's subtree, disposes all reactive effects and cleanup callbacks, then empties the container.</p>
+
+          <h2 id="notes">Notes</h2>
+          <ul>
+            <li><code>mount()</code> clears the container before rendering. Existing content is removed.</li>
+            <li>If a previous component tree was mounted in the same container, it is fully disposed (effects, cleanups, hooks) before the new tree is created.</li>
+            <li>The string selector form uses <code>document.querySelector()</code>. Make sure the element exists in the DOM before calling <code>mount()</code>.</li>
+            <li>This is the primary entry point for What applications. Every app calls <code>mount()</code> once in its entry file.</li>
+            <li>For server-side rendering, see the SSR-specific mount APIs in the SSR documentation.</li>
+          </ul>
+
+          <div class="page-nav">
+            <a href="./h.html">
+              <span class="label">Previous</span>
+              <span class="title">h()</span>
+            </a>
+            <a href="./Show.html" class="next">
+              <span class="label">Next</span>
+              <span class="title">&lt;Show&gt;</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

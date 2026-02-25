@@ -1,7 +1,7 @@
 {
   "name": "what-framework",
   "version": "0.5.3",
-  "description": "The closest framework to vanilla JS — signals, components, islands, SSR",
+  "description": "The closest framework to vanilla JS \u2014 signals, components, islands, SSR",
   "type": "module",
   "main": "src/index.js",
   "module": "src/index.js",
@@ -63,7 +63,7 @@
   "bugs": {
     "url": "https://github.com/zvndev/what-fw/issues"
   },
-  "homepage": "https://whatframework.dev",
+  "homepage": "https://whatfw.com",
   "dependencies": {
     "what-core": "^0.5.3",
     "what-router": "^0.5.3",

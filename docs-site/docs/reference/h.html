@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>h() — What Framework</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+  <nav>
+    <div class="nav-left">
+      <a href="../" class="logo">What <span class="logo-badge">v0.5.3</span></a>
+      <div class="nav-links">
+        <a href="../learn/">Learn</a>
+        <a href="./" class="active">Reference</a>
+        <a href="../tutorial/">Tutorial</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">Reactivity</div>
+        <ul class="sidebar-links">
+          <li><a href="./signal.html">signal()</a></li>
+          <li><a href="./computed.html">computed()</a></li>
+          <li><a href="./effect.html">effect()</a></li>
+          <li><a href="./batch.html">batch()</a></li>
+          <li><a href="./untrack.html">untrack()</a></li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">Components</div>
+        <ul class="sidebar-links">
+          <li><a href="./h.html" class="active">h()</a></li>
+          <li><a href="./mount.html">mount()</a></li>
+          <li><a href="./Show.html">&lt;Show&gt;</a></li>
+          <li><a href="./For.html">&lt;For&gt;</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="content-wrapper">
+        <div class="content-inner">
+          <h1>h()</h1>
+          <p class="subtitle">Create virtual DOM nodes (VNodes). This is the function that JSX compiles to.</p>
+
+<pre><code><span class="keyword">const</span> vnode = <span class="function">h</span>(tag, props, ...children)</code></pre>
+
+          <h2 id="parameters">Parameters</h2>
+          <table>
+            <thead>
+              <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>tag</code></td>
+                <td><code>string | Function</code></td>
+                <td>An HTML tag name (e.g. <code>'div'</code>) or a component function.</td>
+              </tr>
+              <tr>
+                <td><code>props</code></td>
+                <td><code>object | null</code></td>
+                <td>Properties/attributes for the element, or <code>null</code> if none. The special <code>key</code> prop is extracted and stored on the VNode for reconciliation.</td>
+              </tr>
+              <tr>
+                <td><code>...children</code></td>
+                <td><code>any[]</code></td>
+                <td>Child elements. Can be strings, numbers, other VNodes, functions (reactive children), arrays, or <code>null</code>/<code>boolean</code> (ignored).</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2 id="returns">Returns</h2>
+          <p>A VNode object:</p>
+
+          <table>
+            <thead>
+              <tr><th>Property</th><th>Type</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>tag</code></td>
+                <td><code>string | Function</code></td>
+                <td>The tag name or component function</td>
+              </tr>
+              <tr>
+                <td><code>props</code></td>
+                <td><code>object</code></td>
+                <td>The properties (with <code>key</code> stripped)</td>
+              </tr>
+              <tr>
+                <td><code>children</code></td>
+                <td><code>Array</code></td>
+                <td>Flattened children (nulls and booleans removed, nested arrays flattened)</td>
+              </tr>
+              <tr>
+                <td><code>key</code></td>
+                <td><code>any | null</code></td>
+                <td>The key for keyed reconciliation</td>
+              </tr>
+              <tr>
+                <td><code>_vnode</code></td>
+                <td><code>true</code></td>
+                <td>Internal marker identifying this as a VNode</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2 id="usage">Usage</h2>
+
+          <h3>HTML Elements</h3>
+<pre><code><span class="keyword">import</span> { h } <span class="keyword">from</span> <span class="string">'what-framework'</span>;
+
+<span class="comment">// Create a div with a class and text child</span>
+<span class="function">h</span>(<span class="string">'div'</span>, { className: <span class="string">'card'</span> }, <span class="string">'Hello'</span>);
+
+<span class="comment">// Equivalent JSX:</span>
+<span class="comment">// &lt;div className="card"&gt;Hello&lt;/div&gt;</span></code></pre>
+
+          <h3>Components</h3>
+<pre><code><span class="keyword">function</span> <span class="function">Greeting</span>({ name }) {
+  <span class="keyword">return</span> <span class="function">h</span>(<span class="string">'h1'</span>, <span class="keyword">null</span>, <span class="string">'Hello, '</span>, name);
+}
+
+<span class="comment">// Render a component</span>
+<span class="function">h</span>(Greeting, { name: <span class="string">'Alice'</span> });
+
+<span class="comment">// Equivalent JSX:</span>
+<span class="comment">// &lt;Greeting name="Alice" /&gt;</span></code></pre>
+
+          <h3>Nested Elements</h3>
+<pre><code><span class="function">h</span>(<span class="string">'div'</span>, { className: <span class="string">'container'</span> },
+  <span class="function">h</span>(<span class="string">'h1'</span>, <span class="keyword">null</span>, <span class="string">'Title'</span>),
+  <span class="function">h</span>(<span class="string">'p'</span>, <span class="keyword">null</span>, <span class="string">'Paragraph'</span>),
+  <span class="function">h</span>(<span class="string">'button'</span>, { onClick: handleClick }, <span class="string">'Click'</span>)
+);
+
+<span class="comment">// Equivalent JSX:</span>
+<span class="comment">// &lt;div className="container"&gt;</span>
+<span class="comment">//   &lt;h1&gt;Title&lt;/h1&gt;</span>
+<span class="comment">//   &lt;p&gt;Paragraph&lt;/p&gt;</span>
+<span class="comment">//   &lt;button onClick={handleClick}&gt;Click&lt;/button&gt;</span>
+<span class="comment">// &lt;/div&gt;</span></code></pre>
+
+          <h3>With Key (for lists)</h3>
+<pre><code><span class="keyword">const</span> items = [<span class="string">'A'</span>, <span class="string">'B'</span>, <span class="string">'C'</span>];
+
+items.map(item =&gt;
+  <span class="function">h</span>(<span class="string">'li'</span>, { key: item }, item)
+);
+
+<span class="comment">// Equivalent JSX:</span>
+<span class="comment">// items.map(item =&gt; &lt;li key={item}&gt;{item}&lt;/li&gt;)</span></code></pre>
+
+          <h3>Reactive Function Children</h3>
+<pre><code><span class="keyword">const</span> count = <span class="function">signal</span>(<span class="number">0</span>);
+
+<span class="function">h</span>(<span class="string">'span'</span>, <span class="keyword">null</span>, () =&gt; count());
+
+<span class="comment">// Equivalent JSX:</span>
+<span class="comment">// &lt;span&gt;{() =&gt; count()}&lt;/span&gt;</span></code></pre>
+
+          <h2 id="jsx-compilation">JSX Compilation</h2>
+          <p>The What Babel plugin transforms all JSX into <code>h()</code> calls. This is the single, unified rendering path:</p>
+
+<pre><code><span class="comment">// JSX input</span>
+&lt;div className="card"&gt;
+  &lt;Counter initial={<span class="number">0</span>} /&gt;
+&lt;/div&gt;
+
+<span class="comment">// Compiled output</span>
+<span class="function">h</span>(<span class="string">'div'</span>, { className: <span class="string">'card'</span> },
+  <span class="function">h</span>(Counter, { initial: <span class="number">0</span> })
+)</code></pre>
+
+          <h2 id="children-handling">Children Handling</h2>
+          <p>Children are flattened and normalized:</p>
+          <ul>
+            <li><code>null</code>, <code>undefined</code>, <code>true</code>, <code>false</code> are removed</li>
+            <li>Nested arrays are flattened</li>
+            <li>Numbers are converted to strings</li>
+            <li>Functions are preserved as reactive children</li>
+            <li>VNode objects are passed through</li>
+          </ul>
+
+          <h2 id="notes">Notes</h2>
+          <ul>
+            <li>You rarely need to call <code>h()</code> directly. Use JSX syntax and let the Babel plugin handle compilation.</li>
+            <li>For usage without a build step, What also provides an <code>html</code> tagged template literal that parses HTML-like syntax at runtime.</li>
+            <li>The <code>key</code> prop is extracted from <code>props</code> and placed on the VNode directly. It is not passed to components.</li>
+            <li>Component children are passed via <code>props.children</code> following React's semantics: 0 children = <code>undefined</code>, 1 child = the child directly, N children = an array.</li>
+          </ul>
+
+          <div class="page-nav">
+            <a href="./untrack.html">
+              <span class="label">Previous</span>
+              <span class="title">untrack()</span>
+            </a>
+            <a href="./mount.html" class="next">
+              <span class="label">Next</span>
+              <span class="title">mount()</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
