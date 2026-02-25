@@ -1,7 +1,7 @@
 {
   "name": "what-react",
-  "version": "0.1.0",
-  "description": "React compatibility layer for What Framework \u2014 use React packages with signals under the hood",
+  "version": "0.1.1",
+  "description": "React compatibility layer for What Framework — use React packages with signals under the hood",
   "type": "module",
   "main": "src/index.js",
   "exports": {
