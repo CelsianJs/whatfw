@@ -108,7 +108,6 @@ console.log(name.peek());  <span class="comment">// "Alice" (no subscription)</s
           <p>In JSX, you can use signals directly or call them explicitly. The compiler detects reactive expressions (function calls) and auto-wraps them:</p>
 
 <pre><code><span class="comment">// All work in JSX:</span>
-&lt;span&gt;{name}&lt;/span&gt;      <span class="comment">// pass signal directly — reconciler reads it</span>
 &lt;span&gt;{name()}&lt;/span&gt;    <span class="comment">// compiler auto-wraps → () =&gt; name()</span>
 &lt;span&gt;{() =&gt; name()}&lt;/span&gt;  <span class="comment">// explicit reactive wrapper — also works</span></code></pre>
 

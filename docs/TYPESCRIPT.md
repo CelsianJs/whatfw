@@ -15,7 +15,7 @@ For existing projects, add a `tsconfig.json`:
     "module": "ESNext",
     "moduleResolution": "bundler",
     "jsx": "preserve",
-    "jsxImportSource": "what-core",
+    "jsxImportSource": "what-framework",
     "strict": true,
     "noEmit": true,
     "skipLibCheck": true,
@@ -30,7 +30,7 @@ For existing projects, add a `tsconfig.json`:
 
 Key settings:
 - **`jsx: "preserve"`** — Let the What compiler handle JSX, not TypeScript
-- **`jsxImportSource: "what-core"`** — Points TypeScript to What's JSX type definitions
+- **`jsxImportSource: "what-framework"`** — Points TypeScript to What's JSX type definitions
 - **`noEmit: true`** — TypeScript is for type checking only; Vite + What compiler handle the build
 
 ## File Extensions
@@ -167,7 +167,7 @@ export default [
 Make sure the package is installed: `npm install what-framework`
 
 ### JSX types not working
-Verify `jsxImportSource` is set to `what-core` in tsconfig.json, and that `what-core` is installed (it's a dependency of `what-framework`).
+Verify `jsxImportSource` is set to `what-framework` in tsconfig.json, and that `what-framework` is installed.
 
 ### Type errors in `.jsx` files
 TypeScript doesn't check `.jsx` files by default. Either rename to `.tsx` or add `"allowJs": true` and `"checkJs": true` to your tsconfig.

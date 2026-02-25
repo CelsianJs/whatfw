@@ -65,14 +65,18 @@ npm run dev</code></pre>
           <p>Replace the contents of <code>src/main.jsx</code> with this starter code:</p>
 
           <div class="code-header">src/main.jsx</div>
-<pre><code><span class="keyword">export default function</span> <span class="function">Game</span>() {
+<pre><code><span class="keyword">import</span> { mount } <span class="keyword">from</span> <span class="string">'what-framework'</span>;
+
+<span class="keyword">function</span> <span class="function">Game</span>() {
   <span class="keyword">return</span> (
     &lt;div className=<span class="string">"game"</span>&gt;
       &lt;h1&gt;Tic-Tac-Toe&lt;/h1&gt;
       <span class="comment">{/* We'll add the board here */}</span>
     &lt;/div&gt;
   );
-}</code></pre>
+}
+
+mount(&lt;<span class="function">Game</span> /&gt;, <span class="string">'#app'</span>);</code></pre>
 
           <h2 id="add-styles">Add Some Styles</h2>
           <p>Create <code>src/styles.css</code> with the game styles:</p>

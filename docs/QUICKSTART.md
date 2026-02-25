@@ -190,7 +190,7 @@ function Counter() {
 }
 ```
 
-Key tsconfig settings: `"jsx": "preserve"` (compiler handles JSX), `"jsxImportSource": "what-core"`.
+Key tsconfig settings: `"jsx": "preserve"` (compiler handles JSX), `"jsxImportSource": "what-framework"`.
 
 See [TYPESCRIPT.md](./TYPESCRIPT.md) for the full guide.
 
