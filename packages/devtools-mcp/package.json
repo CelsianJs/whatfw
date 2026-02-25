@@ -1,0 +1,33 @@
+{
+  "name": "what-devtools-mcp",
+  "version": "0.1.0",
+  "description": "MCP server bridging AI agents to live What Framework app state via WebSocket",
+  "type": "module",
+  "bin": {
+    "what-devtools-mcp": "./src/index.js"
+  },
+  "exports": {
+    ".": "./src/index.js",
+    "./client": "./src/client.js",
+    "./vite-plugin": "./src/vite-plugin.js"
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "ws": "^8.0.0",
+    "zod": "^3.25.0"
+  },
+  "peerDependencies": {
+    "what-devtools": ">=0.5.0"
+  },
+  "keywords": [
+    "what-framework",
+    "devtools",
+    "mcp",
+    "model-context-protocol",
+    "ai-debugging"
+  ],
+  "license": "MIT"
+}
