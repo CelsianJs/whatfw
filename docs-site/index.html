@@ -4,64 +4,38 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>What Framework — Signals-Based Web Framework</title>
-  <meta name="description" content="A lightweight signals-based web framework with islands architecture, data fetching, forms, animation, and surgical DOM updates. ~4kB gzipped core.">
+  <meta name="description" content="A lightweight signals-based web framework with fine-grained reactivity, islands architecture, and surgical DOM updates. ~4kB gzipped core. Zero dependencies.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./design-system.css">
+  <script src="./theme.js"></script>
   <style>
-    :root {
-      --text: #18181b;
-      --text-secondary: #52525b;
-      --text-muted: #a1a1aa;
-      --bg: #fafaf9;
-      --bg-alt: #ffffff;
-      --accent: #18181b;
-      --border: #e4e4e7;
-      --code-bg: #f4f4f5;
-    }
+    /* ========== Landing Page ========== */
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { font-size: 16px; scroll-behavior: smooth; }
-
-    body {
-      font-family: 'Inter', -apple-system, sans-serif;
-      color: var(--text);
-      background: var(--bg);
-      line-height: 1.6;
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .animate { animation: fadeUp 0.6s ease-out both; }
-    .delay-1 { animation-delay: 0.1s; }
-    .delay-2 { animation-delay: 0.2s; }
-    .delay-3 { animation-delay: 0.3s; }
-    .delay-4 { animation-delay: 0.4s; }
-    .delay-5 { animation-delay: 0.5s; }
-
-    nav {
+    /* --- Nav --- */
+    .nav {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
-      padding: 1rem 2rem;
+      height: 64px;
+      padding: 0 32px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(250, 250, 249, 0.9);
-      backdrop-filter: blur(12px);
+      background: var(--nav-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
       z-index: 100;
     }
 
+    .nav-left, .nav-right { display: flex; align-items: center; gap: 24px; }
+
     .logo {
-      font-weight: 700;
-      font-size: 1.25rem;
-      text-decoration: none;
-      color: var(--text);
+      font-weight: 800;
+      font-size: 1.2rem;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -70,70 +44,99 @@
     .logo-badge {
       font-size: 11px;
       font-weight: 600;
-      padding: 2px 6px;
+      padding: 2px 8px;
       background: var(--accent);
-      color: white;
+      color: #fff;
       border-radius: 4px;
     }
 
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-    }
+    .nav-links { display: flex; gap: 24px; }
 
     .nav-links a {
       color: var(--text-secondary);
-      text-decoration: none;
-      font-size: 0.9rem;
+      font-size: 14px;
       font-weight: 500;
       transition: color 0.2s;
     }
 
     .nav-links a:hover { color: var(--text); }
 
-    .hero {
-      min-height: 100vh;
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .nav-cta:hover { background: var(--accent-hover); }
+
+    .github-link {
       display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 6rem 2rem 4rem;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    .hero h1 {
-      font-size: clamp(2.5rem, 6vw, 4rem);
-      font-weight: 300;
-      letter-spacing: -0.03em;
-      line-height: 1.15;
-      margin-bottom: 1.5rem;
-    }
-
-    .hero h1 strong { font-weight: 700; }
-
-    .hero p {
-      font-size: 1.15rem;
+      align-items: center;
+      gap: 6px;
       color: var(--text-secondary);
-      max-width: 560px;
-      margin-bottom: 2rem;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .github-link:hover { color: var(--text); }
+    .github-link svg { width: 20px; height: 20px; }
+
+    /* --- Hero (Dark, Split Layout) --- */
+    .hero {
+      padding: 140px 32px 100px;
+      background: var(--bg-deep);
+    }
+
+    .hero-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    .hero-text h1 {
+      font-size: clamp(2.5rem, 5vw, 3.5rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      color: var(--text);
+    }
+
+    .hero-text .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
       line-height: 1.7;
+      margin-bottom: 32px;
+      max-width: 480px;
     }
 
     .hero-buttons {
       display: flex;
-      gap: 1rem;
-      margin-bottom: 3rem;
+      gap: 12px;
+      margin-bottom: 32px;
     }
 
     .btn {
       display: inline-flex;
       align-items: center;
-      padding: 0.85rem 1.75rem;
-      font-size: 0.9rem;
+      gap: 8px;
+      padding: 12px 24px;
+      font-size: 15px;
       font-weight: 600;
-      text-decoration: none;
       border-radius: 8px;
       transition: all 0.2s;
+      cursor: pointer;
+      border: none;
     }
 
     .btn-primary {
@@ -142,525 +145,867 @@
     }
 
     .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      background: var(--accent-hover);
+      transform: translateY(-1px);
     }
 
     .btn-secondary {
       color: var(--text);
       border: 1px solid var(--border);
-      background: var(--bg-alt);
+      background: var(--bg-raised);
     }
 
-    .btn-secondary:hover { border-color: var(--text); }
+    .btn-secondary:hover {
+      border-color: var(--text-muted);
+      transform: translateY(-1px);
+    }
 
-    .code-block {
-      background: var(--bg-alt);
+    .command-block {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 18px;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .command-block:hover { border-color: var(--accent); }
+
+    .command-block .prompt { color: var(--accent); }
+    .command-block .cmd { color: var(--text); }
+
+    .command-block .copy-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: 'Inter', sans-serif;
+      margin-left: 4px;
+    }
+
+    /* Hero Code Block */
+    .hero-code {
+      position: relative;
+    }
+
+    .hero-code-inner {
+      background: var(--bg-raised);
       border: 1px solid var(--border);
       border-radius: 12px;
       overflow: hidden;
-      max-width: 500px;
+      box-shadow: var(--shadow-lg);
     }
 
     .code-header {
-      padding: 0.75rem 1rem;
+      padding: 12px 16px;
       border-bottom: 1px solid var(--border);
       display: flex;
-      gap: 6px;
+      align-items: center;
+      gap: 8px;
     }
 
     .code-dot {
       width: 10px;
       height: 10px;
       border-radius: 50%;
-      background: var(--border);
     }
 
-    .code-content {
-      padding: 1.25rem;
-    }
+    .code-dot:nth-child(1) { background: #ef4444; }
+    .code-dot:nth-child(2) { background: #f59e0b; }
+    .code-dot:nth-child(3) { background: #22c55e; }
 
-    .code-content pre {
+    .code-filename {
+      margin-left: 12px;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.85rem;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .code-body {
+      padding: 20px;
+    }
+
+    .code-body pre {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
       line-height: 1.7;
     }
 
-    .code-content .keyword { color: #8b5cf6; }
-    .code-content .string { color: #059669; }
-    .code-content .function { color: #2563eb; }
-    .code-content .comment { color: #9ca3af; }
+    /* --- Sections --- */
+    .section-dark {
+      background: var(--bg-deep);
+      padding: 100px 32px;
+    }
 
-    section {
-      padding: 5rem 2rem;
-      max-width: 1100px;
+    .section-cream {
+      background: var(--bg-cream);
+      padding: 100px 32px;
+      color: var(--text-on-cream);
+    }
+
+    .section-inner {
+      max-width: 1200px;
       margin: 0 auto;
     }
 
-    .section-label {
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-muted);
-      margin-bottom: 0.75rem;
+    .section-header {
+      margin-bottom: 56px;
     }
 
-    .section-title {
-      font-size: 2rem;
-      font-weight: 300;
-      letter-spacing: -0.02em;
-      margin-bottom: 1rem;
+    .section-header .pill {
+      margin-bottom: 16px;
     }
 
-    .section-title strong { font-weight: 700; }
+    .section-cream .pill {
+      border-color: var(--border-cream);
+      color: var(--text-on-cream-secondary);
+      background: var(--bg-cream-raised);
+    }
 
-    .section-desc {
+    .section-header h2 {
+      font-size: clamp(2rem, 4vw, 2.75rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    .section-cream .section-header h2 {
+      color: var(--text-on-cream);
+    }
+
+    .section-header p {
+      font-size: 1.1rem;
       color: var(--text-secondary);
-      font-size: 1.05rem;
-      max-width: 500px;
-      margin-bottom: 3rem;
+      max-width: 560px;
+      line-height: 1.7;
     }
 
+    .section-cream .section-header p {
+      color: var(--text-on-cream-secondary);
+    }
+
+    /* --- Features (Cream Section) --- */
     .features-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 1.5rem;
+      gap: 24px;
     }
 
-    .feature {
-      padding: 1.5rem;
-      background: var(--bg-alt);
-      border: 1px solid var(--border);
+    .feature-card {
+      padding: 32px;
+      background: var(--bg-cream-raised);
+      border: 1px solid var(--border-cream);
       border-radius: 12px;
-      transition: all 0.15s;
+      transition: all 0.2s;
     }
 
-    .feature:hover {
-      border-color: var(--text-muted);
-      transform: translateY(-2px);
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
     }
 
-    .feature h3 {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      background: var(--accent-dim);
     }
 
-    .feature p {
-      color: var(--text-secondary);
+    .feature-icon svg { color: var(--accent); }
+
+    .feature-icon-orange { background: var(--accent-orange-dim); }
+    .feature-icon-orange svg { color: var(--accent-orange); }
+
+    .feature-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text-on-cream);
+    }
+
+    .feature-card p {
+      color: var(--text-on-cream-secondary);
       font-size: 0.9rem;
       line-height: 1.6;
+      margin-bottom: 16px;
     }
 
-    .feature a {
-      display: inline-block;
-      margin-top: 0.5rem;
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: #3b82f6;
-      text-decoration: none;
+    .feature-code {
+      padding: 12px 16px;
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      border-radius: 8px;
+      overflow-x: auto;
     }
 
-    .feature a:hover { text-decoration: underline; }
+    .feature-code pre {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      line-height: 1.6;
+      color: var(--text);
+    }
 
-    .stats {
+    /* --- Code Examples (Dark Section, Tabbed) --- */
+    .code-tabs {
       display: flex;
-      gap: 4rem;
-      padding: 3rem 0;
-      border-top: 1px solid var(--border);
+      gap: 0;
       border-bottom: 1px solid var(--border);
-      margin: 3rem 0;
+    }
+
+    .code-tab {
+      padding: 12px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border: none;
+      background: none;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .code-tab:hover { color: var(--text-secondary); }
+
+    .code-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .code-examples-wrapper {
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .code-panel {
+      display: none;
+      padding: 24px;
+    }
+
+    .code-panel.active { display: block; }
+
+    .code-panel pre {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13.5px;
+      line-height: 1.7;
+    }
+
+    /* --- Ecosystem (Cream Section) --- */
+    .ecosystem-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .eco-card {
+      padding: 24px;
+      background: var(--bg-cream-raised);
+      border: 1px solid var(--border-cream);
+      border-radius: 10px;
+      transition: all 0.2s;
+      display: block;
+    }
+
+    .eco-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    .eco-card-name {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-on-cream);
+    }
+
+    .eco-tag {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: var(--accent-dim);
+      color: var(--accent);
+    }
+
+    .eco-card p {
+      color: var(--text-on-cream-secondary);
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    /* --- Stats (Dark Section) --- */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    .stat {
+      text-align: center;
+      padding: 32px 24px;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: 12px;
     }
 
     .stat-value {
-      font-size: 2rem;
-      font-weight: 300;
-      letter-spacing: -0.02em;
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 4px;
+      color: var(--accent);
     }
+
+    .stat-value-orange { color: var(--accent-orange); }
 
     .stat-label {
       font-size: 0.85rem;
       color: var(--text-secondary);
     }
 
-    /* Live demo section */
-    .demo-section {
-      padding: 5rem 2rem;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    .demo-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2rem;
-    }
-
-    .demo-card {
-      background: var(--bg-alt);
-      border: 1px solid var(--border);
-      border-radius: 12px;
+    /* --- CTA (Dark Section) --- */
+    .cta-section {
+      text-align: center;
+      padding: 120px 32px;
+      background: var(--bg);
+      position: relative;
       overflow: hidden;
     }
 
-    .demo-card-header {
-      padding: 1rem 1.25rem;
-      border-bottom: 1px solid var(--border);
-      font-weight: 600;
-      font-size: 0.9rem;
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
     }
 
-    .demo-card-body {
-      padding: 1.5rem;
+    .cta-section h2 {
+      font-size: clamp(2rem, 4vw, 2.75rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
     }
 
-    .demo-card-body pre {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
-      line-height: 1.6;
-    }
-
-    .cta {
-      text-align: center;
-      padding: 6rem 2rem;
-    }
-
-    .cta h2 {
-      font-size: 2.5rem;
-      font-weight: 300;
-      margin-bottom: 1rem;
-    }
-
-    .cta p {
+    .cta-section .cta-desc {
       color: var(--text-secondary);
       font-size: 1.1rem;
-      margin-bottom: 2rem;
+      margin-bottom: 40px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.7;
     }
 
-    .install-command {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      padding: 16px 28px;
-      background: var(--accent);
-      color: #fff;
-      border-radius: 8px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.95rem;
-      margin-bottom: 2rem;
-    }
-
-    .install-command .prompt { opacity: 0.5; }
-
-    footer {
-      padding: 2rem;
-      border-top: 1px solid var(--border);
+    .cta-buttons {
       display: flex;
-      justify-content: space-between;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    /* --- Footer --- */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 64px 32px 48px;
+      background: var(--bg-deep);
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+    }
+
+    .footer-brand .footer-logo {
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .footer-brand .footer-desc {
       font-size: 0.85rem;
       color: var(--text-secondary);
-      max-width: 1100px;
-      margin: 0 auto;
+      line-height: 1.6;
+      max-width: 280px;
+      margin-bottom: 16px;
     }
 
-    footer a {
-      color: inherit;
-      text-decoration: none;
+    .footer-brand .footer-meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
     }
 
-    footer a:hover { color: var(--text); }
-
-    .footer-links {
-      display: flex;
-      gap: 2rem;
+    .footer-col h4 {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 16px;
     }
 
+    .footer-col a {
+      display: block;
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-bottom: 10px;
+      transition: color 0.2s;
+    }
+
+    .footer-col a:hover { color: var(--text); }
+
+    /* --- Animations --- */
+    @keyframes glow-pulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.5; }
+    }
+
+    /* --- Responsive --- */
     @media (max-width: 1024px) {
+      .hero-inner { grid-template-columns: 1fr; gap: 48px; }
+      .hero-code { max-width: 560px; }
       .features-grid { grid-template-columns: 1fr 1fr; }
-      .demo-grid { grid-template-columns: 1fr; }
+      .ecosystem-grid { grid-template-columns: 1fr 1fr; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .footer-inner { grid-template-columns: 1fr 1fr; }
     }
 
     @media (max-width: 768px) {
+      .nav { padding: 0 16px; }
       .nav-links { display: none; }
+      .nav-cta { display: none; }
+      .github-link span { display: none; }
+      .hero { padding: 100px 16px 60px; }
+      .hero-text h1 { font-size: 2rem; }
+      .hero-text .subtitle { font-size: 0.95rem; }
+      .hero-buttons { flex-direction: column; align-items: flex-start; }
       .features-grid { grid-template-columns: 1fr; }
-      .stats { flex-direction: column; gap: 1.5rem; }
-      .hero-buttons { flex-direction: column; }
+      .ecosystem-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .section-dark, .section-cream { padding: 64px 16px; }
+      .cta-section { padding: 80px 16px; }
+      .command-block { font-size: 0.8rem; }
+      .command-block .copy-hint { display: none; }
+      .footer { padding: 48px 16px 32px; }
+      .footer-inner { grid-template-columns: 1fr; gap: 32px; }
+      .code-body pre { font-size: 12px; }
+      .feature-code pre { font-size: 11.5px; }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <nav>
-    <a href="/" class="logo">What <span class="logo-badge">v0.5.3</span></a>
-    <div class="nav-links">
-      <a href="/docs">Documentation</a>
-      <a href="/docs/learn/">Quick Start</a>
-      <a href="/docs/tutorial/">Tutorial</a>
-      <a href="https://react.whatfw.com">React Compat</a>
-      <a href="https://benchmarks.whatfw.com">Benchmarks</a>
-      <a href="https://github.com/zvndev/what-fw">GitHub</a>
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-left">
+      <a href="/" class="logo">What <span class="logo-badge">v0.5.3</span></a>
+      <div class="nav-links">
+        <a href="/docs">Docs</a>
+        <a href="/docs/learn/">Quick Start</a>
+        <a href="/docs/tutorial/">Tutorial</a>
+        <a href="https://react.whatfw.com">React Compat</a>
+      </div>
+    </div>
+    <div class="nav-right">
+      <a href="https://github.com/zvndev/what-fw" class="github-link">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        <span>GitHub</span>
+      </a>
+      <button class="theme-toggle" aria-label="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+      <a href="/docs/learn/" class="nav-cta">Get Started</a>
     </div>
   </nav>
 
+  <!-- Hero — Split Layout -->
   <section class="hero">
-    <h1 class="animate">The framework<br>that <strong>disappears</strong></h1>
-    <p class="animate delay-1">Signals-based reactivity. Surgical DOM updates. Islands architecture. Data fetching, forms, animation, accessibility — all built in. ~4kB gzipped core.</p>
-    <div class="hero-buttons animate delay-2">
-      <a href="/docs/learn/" class="btn btn-primary">Get started</a>
-      <a href="/docs" class="btn btn-secondary">Read the docs</a>
-    </div>
+    <div class="hero-inner">
+      <div class="hero-text">
+        <h1 class="animate-in">Build with signals,<br>ship less code.</h1>
+        <p class="subtitle animate-in delay-1">A signals-based web framework with fine-grained reactivity, surgical DOM updates, and islands architecture. Everything you need at ~4kB gzipped.</p>
 
-    <div class="code-block animate delay-3">
-      <div class="code-header">
-        <span class="code-dot"></span>
-        <span class="code-dot"></span>
-        <span class="code-dot"></span>
+        <div class="hero-buttons animate-in delay-2">
+          <a href="/docs/learn/" class="btn btn-primary">Get Started</a>
+          <a href="/docs" class="btn btn-secondary">Documentation</a>
+        </div>
+
+        <div class="command-block animate-in delay-3" onclick="copyCommand(this)">
+          <span class="prompt">$</span>
+          <span class="cmd">npx create-what my-app</span>
+          <span class="copy-hint">Click to copy</span>
+        </div>
       </div>
-      <div class="code-content">
-<pre><span class="keyword">import</span> { mount, useSignal, useComputed } <span class="keyword">from</span> <span class="string">'what-framework'</span>;
+
+      <div class="hero-code animate-in delay-2">
+        <div class="hero-code-inner">
+          <div class="code-header">
+            <span class="code-dot"></span>
+            <span class="code-dot"></span>
+            <span class="code-dot"></span>
+            <span class="code-filename">Counter.jsx</span>
+          </div>
+          <div class="code-body">
+<pre><span class="keyword">import</span> { mount, signal, computed } <span class="keyword">from</span> <span class="string">'what-framework'</span>
 
 <span class="keyword">function</span> <span class="function">Counter</span>() {
-  <span class="keyword">const</span> count = <span class="function">useSignal</span>(0);
-  <span class="keyword">const</span> doubled = <span class="function">useComputed</span>(() => count() * 2);
+  <span class="keyword">const</span> count <span class="operator">=</span> <span class="function">signal</span>(<span class="number">0</span>)
+  <span class="keyword">const</span> doubled <span class="operator">=</span> <span class="function">computed</span>(() <span class="operator">=&gt;</span> <span class="function">count</span>() <span class="operator">*</span> <span class="number">2</span>)
 
   <span class="keyword">return</span> (
-    &lt;div&gt;
-      &lt;button onClick={() =&gt; count.set(c =&gt; c + 1)}&gt;
-        Count: {count()}
-      &lt;/button&gt;
-      &lt;p&gt;Doubled: {doubled()}&lt;/p&gt;
-    &lt;/div&gt;
-  );
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onclick</span><span class="operator">=</span>{() <span class="operator">=&gt;</span> <span class="function">count</span>(c <span class="operator">=&gt;</span> c <span class="operator">+</span> <span class="number">1</span>)}<span class="tag">&gt;</span>
+        Count: {<span class="function">count</span>()}
+      <span class="tag">&lt;/button&gt;</span>
+      <span class="tag">&lt;p&gt;</span>Doubled: {<span class="function">doubled</span>()}<span class="tag">&lt;/p&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  )
 }
 
-<span class="function">mount</span>(&lt;<span class="function">Counter</span> /&gt;, <span class="string">'#app'</span>);</pre>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <p class="section-label">Core</p>
-    <h2 class="section-title">Everything you need.<br><strong>Nothing you don't.</strong></h2>
-    <p class="section-desc">A complete framework that respects your bundle size. Zero dependencies.</p>
-
-    <div class="features-grid">
-      <div class="feature">
-        <h3>Fine-Grained Signals</h3>
-        <p>Reactive primitives that track exact dependencies. When a signal changes, only the DOM nodes that read it update — no component re-renders.</p>
-        <a href="/docs/learn/signals.html">Learn signals →</a>
-      </div>
-      <div class="feature">
-        <h3>Islands Architecture</h3>
-        <p>Ship zero JavaScript by default. Hydrate components on idle, on visible, or on first interaction. Perfect for content-heavy sites.</p>
-        <a href="/docs/learn/islands.html">Learn islands →</a>
-      </div>
-      <div class="feature">
-        <h3>~4kB Core</h3>
-        <p>The full reactive runtime, VNode reconciler, and component system in under 4kB gzipped. Zero dependencies. Tree-shakeable.</p>
-      </div>
-      <div class="feature">
-        <h3>Data Fetching</h3>
-        <p>Built-in useSWR, useQuery, and useInfiniteQuery with caching, deduplication, revalidation, and optimistic updates.</p>
-        <a href="/docs/learn/data-fetching.html">Learn data fetching →</a>
-      </div>
-      <div class="feature">
-        <h3>Forms &amp; Validation</h3>
-        <p>useForm with register, validation rules, schema resolvers (Zod, Yup), and pre-built form components.</p>
-        <a href="/docs/learn/forms.html">Learn forms →</a>
-      </div>
-      <div class="feature">
-        <h3>Animation</h3>
-        <p>Physics-based springs, time-based tweens, gesture detection, and CSS transition helpers. No external libraries needed.</p>
-        <a href="/docs/learn/animation.html">Learn animation →</a>
-      </div>
-      <div class="feature">
-        <h3>SSR &amp; Streaming</h3>
-        <p>Server-side rendering with streaming support, server actions, and optimistic updates. Static, server, or hybrid per page.</p>
-        <a href="/docs/learn/ssr.html">Learn SSR →</a>
-      </div>
-      <div class="feature">
-        <h3>Accessibility</h3>
-        <p>Focus traps, screen reader announcements, ARIA helpers, roving tab index, and keyboard navigation built in.</p>
-        <a href="/docs/learn/accessibility.html">Learn a11y →</a>
-      </div>
-      <div class="feature">
-        <h3>Global Stores</h3>
-        <p>Reactive stores with state, computed values, and actions. Define once, use anywhere. No provider boilerplate.</p>
-        <a href="/docs/learn/stores.html">Learn stores →</a>
-      </div>
-    </div>
-
-    <div class="stats">
-      <div>
-        <div class="stat-value">~4kB</div>
-        <div class="stat-label">Gzipped core</div>
-      </div>
-      <div>
-        <div class="stat-value">0</div>
-        <div class="stat-label">Dependencies</div>
-      </div>
-      <div>
-        <div class="stat-value">234</div>
-        <div class="stat-label">Tests passing</div>
-      </div>
-      <div>
-        <div class="stat-value">14</div>
-        <div class="stat-label">Modules</div>
-      </div>
-    </div>
-  </section>
-
-  <section class="demo-section">
-    <p class="section-label">Examples</p>
-    <h2 class="section-title">Code that reads <strong>clearly</strong></h2>
-    <p class="section-desc">Signals make state management straightforward. No magic, just reactive values.</p>
-
-    <div class="demo-grid">
-      <div class="demo-card">
-        <div class="demo-card-header">Reactive Data Fetching</div>
-        <div class="demo-card-body">
-<pre><span class="keyword">import</span> { useSWR } <span class="keyword">from</span> <span class="string">'what-framework'</span>;
-
-<span class="keyword">function</span> <span class="function">UserProfile</span>({ id }) {
-  <span class="keyword">const</span> { data, error, isLoading } = <span class="function">useSWR</span>(
-    <span class="string">`user-${id}`</span>,
-    (key) =&gt;
-      fetch(<span class="string">`/api/users/${id}`</span>)
-        .then(r =&gt; r.json()),
-    { revalidateOnFocus: <span class="keyword">true</span> }
-  );
-
-  <span class="keyword">if</span> (isLoading()) <span class="keyword">return</span> &lt;p&gt;Loading...&lt;/p&gt;;
-
-  <span class="keyword">return</span> &lt;h2&gt;{data()?.name}&lt;/h2&gt;;
-}</pre>
+<span class="function">mount</span>(<span class="tag">&lt;</span><span class="component">Counter</span> <span class="tag">/&gt;</span>, <span class="string">'#app'</span>)</pre>
+          </div>
         </div>
       </div>
-      <div class="demo-card">
-        <div class="demo-card-header">Form Validation</div>
-        <div class="demo-card-body">
-<pre><span class="keyword">import</span> { useForm, rules } <span class="keyword">from</span> <span class="string">'what-framework'</span>;
+    </div>
+  </section>
 
-<span class="keyword">function</span> <span class="function">SignUp</span>() {
-  <span class="keyword">const</span> { register, handleSubmit }
-    = <span class="function">useForm</span>({ mode: <span class="string">'onBlur'</span> });
+  <!-- Why What — Cream Section -->
+  <section class="section-cream" id="features">
+    <div class="section-inner">
+      <div class="section-header animate-in">
+        <span class="pill">Why What</span>
+        <h2>Everything you need.<br>Nothing you don't.</h2>
+        <p>A complete framework that respects your bundle size. Zero dependencies. Fine-grained reactivity that only updates what changed.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card animate-in delay-1">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+          <h3>Fine-Grained Signals</h3>
+          <p>Reactive primitives that track exact dependencies. When a signal changes, only the DOM nodes that read it update.</p>
+          <div class="feature-code">
+<pre><span class="keyword">const</span> count <span class="operator">=</span> <span class="function">signal</span>(<span class="number">0</span>)
+<span class="keyword">const</span> doubled <span class="operator">=</span> <span class="function">computed</span>(() <span class="operator">=&gt;</span> <span class="function">count</span>() <span class="operator">*</span> <span class="number">2</span>)
+<span class="comment">// Only this text node re-renders:</span>
+<span class="tag">&lt;p&gt;</span>{() <span class="operator">=&gt;</span> <span class="function">doubled</span>()}<span class="tag">&lt;/p&gt;</span></pre>
+          </div>
+        </div>
+
+        <div class="feature-card animate-in delay-2">
+          <div class="feature-icon feature-icon-orange">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <h3>Islands Architecture</h3>
+          <p>Ship zero JavaScript by default. Hydrate components on idle, visible, or first interaction. Perfect for content sites.</p>
+          <div class="feature-code">
+<pre><span class="tag">&lt;</span><span class="component">Header</span> <span class="tag">/&gt;</span>          <span class="comment">// Static HTML</span>
+<span class="tag">&lt;</span><span class="component">Comments</span> <span class="attr">client:visible</span> <span class="tag">/&gt;</span>
+<span class="tag">&lt;</span><span class="component">Analytics</span> <span class="attr">client:idle</span> <span class="tag">/&gt;</span>
+<span class="tag">&lt;</span><span class="component">Menu</span> <span class="attr">client:interaction</span> <span class="tag">/&gt;</span></pre>
+          </div>
+        </div>
+
+        <div class="feature-card animate-in delay-3">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.24 12.24a6 6 0 00-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg>
+          </div>
+          <h3>~4kB Core</h3>
+          <p>The full reactive runtime, reconciler, and component system in under 4kB gzipped. Zero dependencies. Tree-shakeable.</p>
+          <div class="feature-code">
+<pre><span class="comment">// Import only what you use:</span>
+<span class="keyword">import</span> { signal, mount } <span class="keyword">from</span> <span class="string">'what-framework'</span>
+<span class="comment">// ~1.2kB for just signals</span>
+<span class="keyword">import</span> { signal } <span class="keyword">from</span> <span class="string">'what-core'</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Code Examples — Dark Section -->
+  <section class="section-dark" id="examples">
+    <div class="section-inner">
+      <div class="section-header animate-in">
+        <span class="pill">Examples</span>
+        <h2>Code that reads clearly.</h2>
+        <p>No magic. Just reactive values and clean APIs.</p>
+      </div>
+
+      <div class="code-examples-wrapper animate-in delay-1">
+        <div class="code-tabs">
+          <button class="code-tab active" data-tab="counter">Counter</button>
+          <button class="code-tab" data-tab="fetching">Data Fetching</button>
+          <button class="code-tab" data-tab="store">Store</button>
+          <button class="code-tab" data-tab="animation">Animation</button>
+        </div>
+
+        <div class="code-panel active" data-panel="counter">
+<pre><span class="keyword">import</span> { signal, computed, mount } <span class="keyword">from</span> <span class="string">'what-framework'</span>
+
+<span class="keyword">function</span> <span class="function">Counter</span>() {
+  <span class="keyword">const</span> count <span class="operator">=</span> <span class="function">signal</span>(<span class="number">0</span>)
+  <span class="keyword">const</span> doubled <span class="operator">=</span> <span class="function">computed</span>(() <span class="operator">=&gt;</span> <span class="function">count</span>() <span class="operator">*</span> <span class="number">2</span>)
 
   <span class="keyword">return</span> (
-    &lt;form onSubmit={<span class="function">handleSubmit</span>(console.log)}&gt;
-      &lt;input {...register(<span class="string">'email'</span>, {
-        required: <span class="keyword">true</span>,
-        validate: rules.<span class="function">email</span>()
-      })} /&gt;
-      &lt;button type=<span class="string">"submit"</span>&gt;Submit&lt;/button&gt;
-    &lt;/form&gt;
-  );
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;h1&gt;</span>{() <span class="operator">=&gt;</span> <span class="function">count</span>()}<span class="tag">&lt;/h1&gt;</span>
+      <span class="tag">&lt;p&gt;</span>Doubled: {() <span class="operator">=&gt;</span> <span class="function">doubled</span>()}<span class="tag">&lt;/p&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onclick</span><span class="operator">=</span>{() <span class="operator">=&gt;</span> <span class="function">count</span>(c <span class="operator">=&gt;</span> c <span class="operator">+</span> <span class="number">1</span>)}<span class="tag">&gt;</span>Increment<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}
+
+<span class="function">mount</span>(<span class="tag">&lt;</span><span class="component">Counter</span> <span class="tag">/&gt;</span>, <span class="string">'#app'</span>)</pre>
+        </div>
+
+        <div class="code-panel" data-panel="fetching">
+<pre><span class="keyword">import</span> { useSWR } <span class="keyword">from</span> <span class="string">'what-framework'</span>
+
+<span class="keyword">function</span> <span class="function">UserProfile</span>({ id }) {
+  <span class="keyword">const</span> { data, error, isLoading } <span class="operator">=</span> <span class="function">useSWR</span>(
+    <span class="string">`user-</span>${id}<span class="string">`</span>,
+    () <span class="operator">=&gt;</span> <span class="function">fetch</span>(<span class="string">`/api/users/</span>${id}<span class="string">`</span>).then(r <span class="operator">=&gt;</span> r.json()),
+    { revalidateOnFocus: <span class="keyword">true</span> }
+  )
+
+  <span class="keyword">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      {() <span class="operator">=&gt;</span> <span class="function">isLoading</span>()
+        ? <span class="tag">&lt;p&gt;</span>Loading...<span class="tag">&lt;/p&gt;</span>
+        : <span class="tag">&lt;h2&gt;</span>{<span class="function">data</span>()?.name}<span class="tag">&lt;/h2&gt;</span>
+      }
+    <span class="tag">&lt;/div&gt;</span>
+  )
+}</pre>
+        </div>
+
+        <div class="code-panel" data-panel="store">
+<pre><span class="keyword">import</span> { createStore, derived } <span class="keyword">from</span> <span class="string">'what-framework'</span>
+
+<span class="keyword">const</span> useCart <span class="operator">=</span> <span class="function">createStore</span>({
+  items: [],
+
+  total: <span class="function">derived</span>(state <span class="operator">=&gt;</span>
+    state.items.reduce((sum, i) <span class="operator">=&gt;</span> sum <span class="operator">+</span> i.price, <span class="number">0</span>)
+  ),
+
+  <span class="function">addItem</span>(item) {
+    <span class="keyword">this</span>.items <span class="operator">=</span> [...<span class="keyword">this</span>.items, item]
+  },
+
+  <span class="function">clear</span>() {
+    <span class="keyword">this</span>.items <span class="operator">=</span> []
+  }
+})
+
+<span class="comment">// Use anywhere — no provider needed</span>
+<span class="keyword">const</span> { items, total, addItem } <span class="operator">=</span> <span class="function">useCart</span>()</pre>
+        </div>
+
+        <div class="code-panel" data-panel="animation">
+<pre><span class="keyword">import</span> { signal, spring } <span class="keyword">from</span> <span class="string">'what-framework'</span>
+
+<span class="keyword">function</span> <span class="function">AnimatedBox</span>() {
+  <span class="keyword">const</span> pos <span class="operator">=</span> <span class="function">spring</span>(<span class="number">0</span>, {
+    stiffness: <span class="number">170</span>,
+    damping: <span class="number">26</span>
+  })
+
+  <span class="keyword">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;div</span>
+        <span class="attr">style</span><span class="operator">=</span>{() <span class="operator">=&gt;</span> <span class="string">`transform: translateX(</span>${<span class="function">pos</span>()}<span class="string">px)`</span>}
+        <span class="attr">class</span><span class="operator">=</span><span class="string">"box"</span>
+      <span class="tag">/&gt;</span>
+      <span class="tag">&lt;button</span> <span class="attr">onclick</span><span class="operator">=</span>{() <span class="operator">=&gt;</span> pos.set(<span class="number">200</span>)}<span class="tag">&gt;</span>
+        Animate
+      <span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  )
 }</pre>
         </div>
       </div>
-      <div class="demo-card">
-        <div class="demo-card-header">Global Store</div>
-        <div class="demo-card-body">
-<pre><span class="keyword">import</span> { createStore, derived }
-  <span class="keyword">from</span> <span class="string">'what-framework'</span>;
+    </div>
+  </section>
 
-<span class="keyword">const</span> useCart = <span class="function">createStore</span>({
-  items: [],
-  total: <span class="function">derived</span>(state =>
-    state.items.reduce(
-      (sum, i) => sum + i.price, 0
-    )
-  ),
-  <span class="function">addItem</span>(item) {
-    <span class="keyword">this</span>.items = [...<span class="keyword">this</span>.items, item];
-  },
-  <span class="function">clear</span>() {
-    <span class="keyword">this</span>.items = [];
-  }
-});</pre>
-        </div>
+  <!-- Ecosystem — Cream Section -->
+  <section class="section-cream" id="ecosystem">
+    <div class="section-inner">
+      <div class="section-header animate-in">
+        <span class="pill">Ecosystem</span>
+        <h2>Batteries included.<br>Modular by design.</h2>
+        <p>Every package works standalone. Grab what you need.</p>
       </div>
-      <div class="demo-card">
-        <div class="demo-card-header">Islands Hydration</div>
-        <div class="demo-card-body">
-<pre><span class="comment">// Static by default — no JS shipped</span>
-&lt;<span class="function">Header</span> /&gt;
-&lt;<span class="function">ArticleBody</span> /&gt;
-&lt;<span class="function">Footer</span> /&gt;
 
-<span class="comment">// Hydrate when scrolled into view</span>
-&lt;<span class="function">Comments</span> client:visible /&gt;
+      <div class="ecosystem-grid">
+        <a href="/docs/learn/signals.html" class="eco-card animate-in delay-1">
+          <div class="eco-card-name">what-core <span class="eco-tag">core</span></div>
+          <p>Signals, computed, effects, batch, untrack. The reactive foundation.</p>
+        </a>
+        <a href="/docs/learn/routing.html" class="eco-card animate-in delay-2">
+          <div class="eco-card-name">what-router</div>
+          <p>Client-side routing with dynamic params, nested layouts, and view transitions.</p>
+        </a>
+        <a href="/docs/learn/components.html" class="eco-card animate-in delay-3">
+          <div class="eco-card-name">what-compiler</div>
+          <p>JSX transform, optimizing compiler, dead code elimination.</p>
+        </a>
+        <a href="/docs/reference/" class="eco-card animate-in delay-1">
+          <div class="eco-card-name">what-devtools</div>
+          <p>Component inspector, signal graph, performance profiler, MCP integration.</p>
+        </a>
+        <a href="https://react.whatfw.com" class="eco-card animate-in delay-2">
+          <div class="eco-card-name">what-react <span class="eco-tag">new</span></div>
+          <p>React compatibility layer. 90+ React libraries working with zero code changes.</p>
+        </a>
+        <a href="/docs/learn/" class="eco-card animate-in delay-3">
+          <div class="eco-card-name">create-what</div>
+          <p>Project scaffolder. One command to start building.</p>
+        </a>
+      </div>
+    </div>
+  </section>
 
-<span class="comment">// Hydrate when browser is idle</span>
-&lt;<span class="function">Analytics</span> client:idle /&gt;
+  <!-- Stats — Dark Section -->
+  <section class="section-dark" id="stats">
+    <div class="section-inner">
+      <div class="section-header animate-in" style="text-align: center; margin-bottom: 48px;">
+        <span class="pill">By the Numbers</span>
+        <h2 style="max-width: 600px; margin: 0 auto;">Small framework.<br>Big capabilities.</h2>
+      </div>
 
-<span class="comment">// Hydrate on first click/focus</span>
-&lt;<span class="function">Dropdown</span> client:interaction /&gt;
-
-<span class="comment">// Spring animation</span>
-<span class="keyword">const</span> pos = <span class="function">spring</span>(0, {
-  stiffness: 170, damping: 26
-});
-pos.<span class="function">set</span>(100); <span class="comment">// animates smoothly</span></pre>
+      <div class="stats-grid">
+        <div class="stat animate-in delay-1">
+          <div class="stat-value">~4kB</div>
+          <div class="stat-label">Gzipped core</div>
+        </div>
+        <div class="stat animate-in delay-2">
+          <div class="stat-value stat-value-orange">0</div>
+          <div class="stat-label">Dependencies</div>
+        </div>
+        <div class="stat animate-in delay-3">
+          <div class="stat-value">257</div>
+          <div class="stat-label">Tests passing</div>
+        </div>
+        <div class="stat animate-in delay-4">
+          <div class="stat-value stat-value-orange">90+</div>
+          <div class="stat-label">React libs compatible</div>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="cta">
-    <h2>Start building<br>in seconds</h2>
-    <p>One command. No config. Just code.</p>
-    <div class="install-command">
-      <span class="prompt">$</span>
-      <span>npx create-what my-app</span>
+  <!-- CTA -->
+  <section class="cta-section">
+    <div>
+      <h2 class="animate-in">Start building in seconds.</h2>
+      <p class="cta-desc animate-in delay-1">One command. No config. Just code.</p>
+      <div class="cta-buttons animate-in delay-2">
+        <a href="/docs/learn/" class="btn btn-primary">Get Started</a>
+        <a href="https://github.com/zvndev/what-fw" class="btn btn-secondary">View on GitHub</a>
+      </div>
+      <div class="animate-in delay-3" style="margin-top: 24px;">
+        <div class="command-block" onclick="copyCommand(this)">
+          <span class="prompt">$</span>
+          <span class="cmd">npx create-what my-app</span>
+          <span class="copy-hint">Click to copy</span>
+        </div>
+      </div>
     </div>
-    <br><br>
-    <a href="/docs/learn/" class="btn btn-primary">Read the docs</a>
   </section>
 
-  <footer>
-    <div>What Framework v0.5.3 — MIT License</div>
-    <div class="footer-links">
-      <a href="/docs">Documentation</a>
-      <a href="https://react.whatfw.com">React Compat</a>
-      <a href="https://benchmarks.whatfw.com">Benchmarks</a>
-      <a href="https://github.com/zvndev/what-fw">GitHub</a>
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">What Framework</div>
+        <div class="footer-desc">A signals-based web framework with fine-grained reactivity and islands architecture.</div>
+        <div class="footer-meta">v0.5.3 &middot; MIT License</div>
+      </div>
+      <div class="footer-col">
+        <h4>Learn</h4>
+        <a href="/docs">Documentation</a>
+        <a href="/docs/learn/">Quick Start</a>
+        <a href="/docs/tutorial/">Tutorial</a>
+        <a href="/docs/reference/">API Reference</a>
+      </div>
+      <div class="footer-col">
+        <h4>Ecosystem</h4>
+        <a href="https://react.whatfw.com">React Compat</a>
+        <a href="https://benchmarks.whatfw.com">Benchmarks</a>
+        <a href="https://www.npmjs.com/package/what-framework">npm</a>
+      </div>
+      <div class="footer-col">
+        <h4>Community</h4>
+        <a href="https://github.com/zvndev/what-fw">GitHub</a>
+        <a href="https://github.com/zvndev/what-fw/issues">Issues</a>
+      </div>
     </div>
   </footer>
 
-  <!-- Live demo on the landing page -->
   <script>
-  (function() {
-    // Mini reactive runtime for the interactive hero demo
-    let _current = null;
-    const signal = (initial) => {
-      let value = initial;
-      const subs = new Set();
-      const s = () => { if (_current) subs.add(_current); return value; };
-      s.set = (v) => { value = typeof v === 'function' ? v(value) : v; subs.forEach(fn => fn()); };
-      return s;
-    };
-    const effect = (fn) => {
-      const execute = () => { const prev = _current; _current = execute; fn(); _current = prev; };
-      execute();
-    };
-
-    // Animate stats on scroll
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.style.opacity = '1';
-          entry.target.style.transform = 'translateY(0)';
-        }
-      });
-    }, { threshold: 0.1 });
-
-    document.querySelectorAll('.feature, .demo-card').forEach(el => {
-      el.style.opacity = '0';
-      el.style.transform = 'translateY(20px)';
-      el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-      observer.observe(el);
+  // Copy command
+  function copyCommand(el) {
+    var cmd = el.querySelector('.cmd').textContent;
+    navigator.clipboard.writeText(cmd).then(function () {
+      var hint = el.querySelector('.copy-hint');
+      hint.textContent = 'Copied!';
+      hint.style.color = 'var(--accent)';
+      setTimeout(function () {
+        hint.textContent = 'Click to copy';
+        hint.style.color = '';
+      }, 2000);
     });
-  })();
+  }
+
+  // Tabbed code examples
+  document.querySelectorAll('.code-tab').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      var target = this.dataset.tab;
+      this.closest('.code-examples-wrapper').querySelectorAll('.code-tab').forEach(function (t) { t.classList.remove('active'); });
+      this.closest('.code-examples-wrapper').querySelectorAll('.code-panel').forEach(function (p) { p.classList.remove('active'); });
+      this.classList.add('active');
+      this.closest('.code-examples-wrapper').querySelector('[data-panel="' + target + '"]').classList.add('active');
+    });
+  });
+
+  // IntersectionObserver for scroll animations
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.animate-in').forEach(function (el) {
+    observer.observe(el);
+  });
   </script>
 </body>
 </html>

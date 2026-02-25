@@ -6,35 +6,61 @@
   <title>Documentation — What Framework</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css">
+  <script src="../theme.js"></script>
   <style>
-    .hero-section {
-      padding: 80px 48px;
-      text-align: center;
-      max-width: 800px;
+    /* --- Docs Hub Hero --- */
+    .docs-hero {
+      padding: 80px 48px 60px;
+      max-width: 900px;
       margin: 0 auto;
     }
-    .hero-section h1 {
-      font-size: 42px;
-      margin-bottom: 16px;
+    .docs-hero h1 {
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 12px;
     }
-    .hero-section .tagline {
-      font-size: 20px;
+    .docs-hero .tagline {
+      font-size: 18px;
       color: var(--text-secondary);
-      margin-bottom: 32px;
+      margin-bottom: 28px;
       line-height: 1.6;
+      max-width: 600px;
+    }
+    .install-block {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 28px;
+    }
+    .install-block:hover {
+      border-color: var(--accent);
+    }
+    .install-block .prompt { color: var(--accent); }
+    .install-block .copy-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: 'Inter', sans-serif;
     }
     .hero-actions {
       display: flex;
-      gap: 16px;
-      justify-content: center;
+      gap: 12px;
     }
     .btn {
       display: inline-flex;
       align-items: center;
-      padding: 12px 24px;
-      font-size: 15px;
+      padding: 10px 20px;
+      font-size: 14px;
       font-weight: 600;
       text-decoration: none;
       border-radius: 8px;
@@ -45,45 +71,62 @@
       color: #fff;
     }
     .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      background: var(--accent-hover);
+      transform: translateY(-1px);
     }
     .btn-secondary {
       color: var(--text);
       border: 1px solid var(--border);
-      background: var(--bg-alt);
+      background: var(--bg-raised);
     }
     .btn-secondary:hover {
-      border-color: var(--text);
+      border-color: var(--text-muted);
+      transform: translateY(-1px);
     }
+
+    /* --- Sections --- */
     .sections {
       padding: 0 48px 80px;
       max-width: 1100px;
       margin: 0 auto;
     }
+    .section-label {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 4px 12px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      background: var(--bg-raised);
+      margin-bottom: 16px;
+    }
     .section-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
+      gap: 16px;
       margin-bottom: 48px;
     }
     .section-card {
-      background: var(--bg-alt);
+      background: var(--bg-raised);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 10px;
       padding: 24px;
       text-decoration: none;
       color: var(--text);
-      transition: all 0.15s;
+      transition: all 0.2s;
     }
     .section-card:hover {
-      border-color: var(--text-muted);
+      border-color: var(--accent);
       transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
     }
     .section-card h3 {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 6px;
     }
     .section-card p {
       font-size: 14px;
@@ -91,56 +134,43 @@
       line-height: 1.6;
       margin: 0;
     }
-    .section-title {
-      font-size: 13px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-muted);
-      margin-bottom: 16px;
-    }
+
+    /* --- Quick Links --- */
     .quick-links {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
+      gap: 10px;
     }
     .quick-link {
       display: block;
-      padding: 12px 16px;
-      background: var(--bg-alt);
+      padding: 10px 14px;
+      background: var(--bg-raised);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 6px;
       text-decoration: none;
       color: var(--text);
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 500;
+      font-family: 'JetBrains Mono', monospace;
       transition: all 0.15s;
     }
     .quick-link:hover {
-      border-color: var(--text-muted);
-      background: var(--accent-light);
+      border-color: var(--accent);
+      color: var(--accent);
     }
-    .install-block {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 16px 24px;
-      background: var(--accent);
-      color: white;
-      border-radius: 8px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 15px;
-      max-width: 400px;
-      margin: 0 auto 48px;
+    .quick-link-accent {
+      color: var(--accent);
     }
-    .install-block .prompt { opacity: 0.5; }
+
     @media (max-width: 1024px) {
-      .section-grid { grid-template-columns: 1fr; }
+      .section-grid { grid-template-columns: 1fr 1fr; }
       .quick-links { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 768px) {
-      .hero-section { padding: 60px 24px; }
+      .docs-hero { padding: 60px 24px 40px; }
+      .docs-hero h1 { font-size: 28px; }
       .sections { padding: 0 24px 60px; }
+      .section-grid { grid-template-columns: 1fr; }
       .hero-actions { flex-direction: column; }
       .quick-links { grid-template-columns: 1fr; }
     }
@@ -149,23 +179,51 @@
 <body>
   <nav>
     <div class="nav-left">
-      <a href="./" class="logo">What <span class="logo-badge">v0.5.3</span></a>
+      <a href="../" class="logo">What <span class="logo-badge">v0.5.3</span></a>
       <div class="nav-links">
         <a href="./learn/">Learn</a>
         <a href="./reference/">Reference</a>
         <a href="./tutorial/">Tutorial</a>
       </div>
     </div>
+    <div class="nav-right">
+      <div class="search-placeholder" onclick="this.style.outline='2px solid var(--accent)'; setTimeout(() => this.style.outline='', 1000)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Search docs...
+        <span class="search-shortcut">/</span>
+      </div>
+      <button class="ai-docs-btn" onclick="document.getElementById('ai-modal').classList.add('active')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 017 7c0 3-2 5.5-4 7l-3 3.5L9 16c-2-1.5-4-4-4-7a7 7 0 017-7z"/><circle cx="12" cy="9" r="1.5" fill="currentColor"/></svg>
+        Ask AI
+        <span class="coming-soon">Soon</span>
+      </button>
+      <button class="theme-toggle" aria-label="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      </button>
+    </div>
   </nav>
 
+  <!-- AI Modal Shell -->
+  <div class="ai-modal-overlay" id="ai-modal" onclick="if(event.target===this)this.classList.remove('active')">
+    <div class="ai-modal">
+      <h3>AI-Powered Search</h3>
+      <p>Ask questions about What Framework in natural language. Powered by Claude.</p>
+      <p style="color: var(--text-muted); font-size: 0.85rem;">Coming soon — we're integrating AI-powered documentation search.</p>
+      <button class="ai-modal-close" onclick="document.getElementById('ai-modal').classList.remove('active')">Close</button>
+    </div>
+  </div>
+
   <div style="margin-top: 64px;">
-    <section class="hero-section">
+    <section class="docs-hero">
       <h1>What Framework Documentation</h1>
       <p class="tagline">Learn to build fast, reactive applications with signals-based state management, fine-grained DOM updates, and islands architecture.</p>
-      <div class="install-block">
+      <div class="install-block" onclick="navigator.clipboard.writeText('npx create-what my-app').then(() => { var h = this.querySelector('.copy-hint'); h.textContent = 'Copied!'; h.style.color = 'var(--accent)'; setTimeout(() => { h.textContent = 'Click to copy'; h.style.color = ''; }, 2000) })">
         <span class="prompt">$</span>
         <span>npx create-what my-app</span>
+        <span class="copy-hint">Click to copy</span>
       </div>
+      <br>
       <div class="hero-actions">
         <a href="./learn/" class="btn btn-primary">Get Started</a>
         <a href="./tutorial/" class="btn btn-secondary">Tutorial</a>
@@ -173,7 +231,7 @@
     </section>
 
     <section class="sections">
-      <div class="section-title">Start Here</div>
+      <span class="section-label">Start Here</span>
       <div class="section-grid">
         <a href="./learn/" class="section-card">
           <h3>Quick Start</h3>
@@ -189,7 +247,7 @@
         </a>
       </div>
 
-      <div class="section-title">Core Concepts</div>
+      <span class="section-label">Core Concepts</span>
       <div class="section-grid">
         <a href="./learn/components.html" class="section-card">
           <h3>Components</h3>
@@ -205,7 +263,7 @@
         </a>
       </div>
 
-      <div class="section-title">Data &amp; State</div>
+      <span class="section-label">Data &amp; State</span>
       <div class="section-grid">
         <a href="./learn/data-fetching.html" class="section-card">
           <h3>Data Fetching</h3>
@@ -221,7 +279,7 @@
         </a>
       </div>
 
-      <div class="section-title">Navigation &amp; Caching</div>
+      <span class="section-label">Navigation &amp; Caching</span>
       <div class="section-grid">
         <a href="./learn/routing.html" class="section-card">
           <h3>Routing</h3>
@@ -233,7 +291,7 @@
         </a>
       </div>
 
-      <div class="section-title">Advanced</div>
+      <span class="section-label">Advanced</span>
       <div class="section-grid">
         <a href="./learn/islands.html" class="section-card">
           <h3>Islands Architecture</h3>
@@ -261,7 +319,7 @@
         </a>
       </div>
 
-      <div class="section-title">API Quick Links</div>
+      <span class="section-label">API Quick Links</span>
       <div class="quick-links">
         <a href="./reference/#reactivity" class="quick-link">signal()</a>
         <a href="./reference/#reactivity" class="quick-link">computed()</a>
@@ -274,7 +332,7 @@
         <a href="./learn/data-fetching.html" class="quick-link">useQuery()</a>
         <a href="./learn/forms.html" class="quick-link">useForm()</a>
         <a href="./learn/stores.html" class="quick-link">createStore()</a>
-        <a href="./reference/" class="quick-link">Full Reference →</a>
+        <a href="./reference/" class="quick-link quick-link-accent">Full Reference &rarr;</a>
       </div>
     </section>
   </div>
