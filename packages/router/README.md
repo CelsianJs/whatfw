@@ -181,7 +181,7 @@ enableScrollRestoration(); // call once at app entry
 ## Links
 
 - [Documentation](https://whatfw.com)
-- [GitHub](https://github.com/zvndev/what-fw)
+- [GitHub](https://github.com/CelsianJs/whatfw)
 
 ## License
 

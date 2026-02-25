@@ -1,6 +1,6 @@
 # What Framework
 
-**[whatfw.com](https://whatfw.com)** · [React Compat](https://react.whatfw.com) · [Benchmarks](https://benchmarks.whatfw.com) · [GitHub](https://github.com/zvndev/what-fw)
+**[whatfw.com](https://whatfw.com)** · [React Compat](https://react.whatfw.com) · [Benchmarks](https://benchmarks.whatfw.com) · [GitHub](https://github.com/CelsianJs/whatfw)
 
 The closest framework to vanilla JS, with a React-familiar authoring experience.
 

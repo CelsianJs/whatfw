@@ -15,17 +15,17 @@
     "what-framework",
     "documentation"
   ],
-  "author": "",
+  "author": "ZVN DEV (https://zvndev.com)",
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/zvndev/what-fw"
+    "url": "https://github.com/CelsianJs/whatfw"
   },
   "bugs": {
-    "url": "https://github.com/zvndev/what-fw/issues"
+    "url": "https://github.com/CelsianJs/whatfw/issues"
   },
   "homepage": "https://whatfw.com"
 }

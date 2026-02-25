@@ -22,14 +22,14 @@
   "peerDependencies": {
     "what-core": "^0.5.3"
   },
-  "author": "",
+  "author": "ZVN DEV (https://zvndev.com)",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/zvndev/what-fw"
+    "url": "https://github.com/CelsianJs/whatfw"
   },
   "bugs": {
-    "url": "https://github.com/zvndev/what-fw/issues"
+    "url": "https://github.com/CelsianJs/whatfw/issues"
   },
   "homepage": "https://whatfw.com"
 }

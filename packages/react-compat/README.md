@@ -123,7 +123,7 @@ reactCompat({
 
 - [React Compat Showcase](https://react.whatfw.com)
 - [Documentation](https://whatfw.com)
-- [GitHub](https://github.com/zvndev/what-fw)
+- [GitHub](https://github.com/CelsianJs/whatfw)
 - [Benchmarks](https://benchmarks.whatfw.com)
 
 ## License
