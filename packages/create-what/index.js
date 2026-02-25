@@ -898,9 +898,7 @@ async function main() {
   }, null, 2) + '\n');
 
   writeFileSync(join(root, '.vscode', 'extensions.json'), JSON.stringify({
-    recommendations: [
-      'zvndev.thenjs',
-    ],
+    recommendations: [],
   }, null, 2) + '\n');
 
   // src/main.jsx

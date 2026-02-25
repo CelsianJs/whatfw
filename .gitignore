@@ -1,14 +1,31 @@
+# Dependencies
 node_modules/
-.DS_Store
-*.log
+
+# Build outputs
+dist/
+
+# Environment
 .env
 .env.*
-.playwright-mcp/
-benchmark-page.png
-.vercel
-.claude/
 
-# Training build artifacts
-training-builds/*/dist/
-training-builds/*/node_modules/
-training-builds/*/package-lock.json
+# OS
+.DS_Store
+*.log
+
+# IDE / tool config (local)
+.claude/
+.cursor/
+.vercel
+.playwright-mcp/
+
+# Screenshots / debug artifacts
+*.png
+*.jpeg
+*.jpg
+
+# Lockfiles (keep root only)
+examples/*/package-lock.json
+examples/npm-app-suite/*/package-lock.json
+examples/package-demos/*/package-lock.json
+packages/*/package-lock.json
+sites/*/package-lock.json

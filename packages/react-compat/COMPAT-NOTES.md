@@ -5,12 +5,6 @@
 2. Add bundler aliases: `react` → `what-react`, `react-dom` → `what-react/dom`
 3. All React libraries now run on What's signals engine
 
-## ThenJS Integration Plan
-- **Pre-configure aliases** in `@thenjs/build` Vite plugin automatically
-- When user installs any React library, it "just works" — no manual config
-- The `create-then` scaffolder should include `what-react` as a dependency
-- Consider: auto-detect React imports and suggest compat layer setup
-
 ---
 
 ## Failure Categories & Root Causes

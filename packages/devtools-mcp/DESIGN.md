@@ -398,7 +398,7 @@ await server.connect(transport);
 For zero-config DX, auto-inject the WS client during dev:
 
 ```javascript
-// In @thenjs/build or a standalone vite plugin
+// In a standalone vite plugin
 export function whatDevToolsMCP() {
   return {
     name: 'what-devtools-mcp',

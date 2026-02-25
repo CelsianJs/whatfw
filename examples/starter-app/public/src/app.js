@@ -37,10 +37,10 @@ async function fetchTasks() {
   } catch {
     // API not available — use demo data
     tasks.set([
-      { id: '1', title: 'Set up CelsianJS backend', status: 'done', priority: 'high', createdAt: Date.now() - 3600000, updatedAt: Date.now() },
+      { id: '1', title: 'Set up the backend', status: 'done', priority: 'high', createdAt: Date.now() - 3600000, updatedAt: Date.now() },
       { id: '2', title: 'Build What Framework UI', status: 'in-progress', priority: 'high', createdAt: Date.now() - 1800000, updatedAt: Date.now() },
       { id: '3', title: 'Connect SSE live updates', status: 'todo', priority: 'medium', createdAt: Date.now() - 900000, updatedAt: Date.now() },
-      { id: '4', title: 'Deploy with ThenJS', status: 'todo', priority: 'low', createdAt: Date.now(), updatedAt: Date.now() },
+      { id: '4', title: 'Deploy to production', status: 'todo', priority: 'low', createdAt: Date.now(), updatedAt: Date.now() },
     ]);
   }
 }

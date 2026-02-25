@@ -139,7 +139,7 @@ function ThemedButton() {
 
 ## IDE Support
 
-Install the **ThenJS + What Framework** VS Code extension (`zvndev.thenjs`) for:
+Install the **What Framework** VS Code extension for:
 - Syntax highlighting for event modifiers, bindings, and directives
 - Code snippets for signals, effects, components, and more
 - TypeScript-aware completions

@@ -197,7 +197,7 @@ See [TYPESCRIPT.md](./TYPESCRIPT.md) for the full guide.
 ## 10. Tooling
 
 - **ESLint**: `npm i -D eslint-plugin-what` — catches signal bugs, enforces patterns
-- **VS Code**: Install `zvndev.thenjs` extension for syntax highlighting + snippets
+- **VS Code**: Install `eslint-plugin-what` for editor integration
 - **DevTools**: `npm i -D what-devtools` — signal inspector panel for development
 
 ## 11. Migration helpers

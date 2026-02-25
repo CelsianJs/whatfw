@@ -138,10 +138,10 @@ A few things are worth building from scratch because they can leverage What's fi
 **What people reach for in React:** Clerk, Auth.js, NextAuth
 **Why it matters:** Login/signup flows.
 
-**Strategy: This is a ThenJS concern, not What**
-- Auth is a backend + frontend concern. ThenJS + CelsianJS should provide the server-side auth.
+**Strategy: Backend concern + What UI**
+- Auth is a backend + frontend concern. The server-side belongs in a separate backend framework.
 - The What-side is just forms + routing guards, which we already have.
-- Could provide pre-built `<LoginForm />`, `<SignupForm />` components as part of a `@thenjs/auth` package.
+- Could provide pre-built `<LoginForm />`, `<SignupForm />` components as part of `@what/ui`.
 
 ---
 
@@ -169,7 +169,7 @@ A few things are worth building from scratch because they can leverage What's fi
 | `@what/i18n` (i18next adapter) | Adapt | Small | Low-Med |
 | `@what/charts` (Chart.js wrapper) | Wrap | Small | Low-Med |
 | `@what/dnd` (SortableJS wrapper) | Wrap | Small | Low-Med |
-| `@thenjs/auth` | Build | Medium | Med (ThenJS) |
+| `@what/auth-ui` | Build | Medium | Medium |
 
 ---
 
@@ -178,7 +178,7 @@ A few things are worth building from scratch because they can leverage What's fi
 - **Full component library** (styled, opinionated like MUI/Chakra) — too much maintenance surface. Stay headless. Let users style with Tailwind/CSS.
 - **State management alternatives** — we already have signals + stores. Don't build a Redux/Zustand equivalent. That's the whole point of signals.
 - **React compatibility layer** — some frameworks (Preact, Million.js) try to be React-compatible. This is a trap. It's an infinite maintenance burden and you're always playing catch-up. What is its own thing.
-- **SSG framework** — ThenJS already handles this. Don't build a separate Astro-like thing.
+- **SSG framework** — static site generation is a meta-framework concern. Don't build a separate Astro-like thing.
 - **CSS-in-JS runtime** — the industry is moving away from this. Tailwind + CSS modules + native CSS is the right answer.
 
 ---
@@ -226,9 +226,6 @@ All ecosystem packages under `@what/` scope:
 - `@what/dnd` — drag and drop
 - `@what/form-resolvers` — Zod/Valibot/Yup form resolvers
 
-ThenJS ecosystem under `@thenjs/`:
-- `@thenjs/auth` — authentication
-
 ---
 
 ## Success Criteria
@@ -242,7 +239,7 @@ A developer should be able to build a **SaaS dashboard** (the most common web ap
 - Form with validation ← `what-framework` (useForm) + `@what/form-resolvers`
 - Charts ← `@what/charts`
 - Animated transitions ← `@what/motion`
-- Auth ← `@thenjs/auth`
+- Auth ← `@what/auth-ui` (forms, guards, session management)
 
 If all of that works smoothly, What Framework is viable for production use.
 
