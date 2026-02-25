@@ -59,6 +59,7 @@ export function signal(initial) {
   };
 
   sig._signal = true;
+  if (__DEV__) sig._subs = subs;
 
   // Notify devtools of signal creation
   if (__DEV__ && __devtools) __devtools.onSignalCreate(sig);
@@ -175,9 +176,13 @@ function _runEffect(e) {
     try {
       const result = e.fn();
       if (typeof result === 'function') e._cleanup = result;
+    } catch (err) {
+      if (__devtools?.onError) __devtools.onError(err, { type: 'effect', effect: e });
+      if (__DEV__) console.warn('[what] Error in stable effect:', err);
     } finally {
       currentEffect = prev;
     }
+    if (__DEV__ && __devtools?.onEffectRun) __devtools.onEffectRun(e);
     return;
   }
 
@@ -185,6 +190,7 @@ function _runEffect(e) {
   // Run effect cleanup from previous run
   if (e._cleanup) {
     try { e._cleanup(); } catch (err) {
+      if (__devtools?.onError) __devtools.onError(err, { type: 'effect-cleanup', effect: e });
       if (__DEV__) console.warn('[what] Error in effect cleanup:', err);
     }
     e._cleanup = null;
@@ -197,9 +203,13 @@ function _runEffect(e) {
     if (typeof result === 'function') {
       e._cleanup = result;
     }
+  } catch (err) {
+    if (__devtools?.onError) __devtools.onError(err, { type: 'effect', effect: e });
+    throw err;
   } finally {
     currentEffect = prev;
   }
+  if (__DEV__ && __devtools?.onEffectRun) __devtools.onEffectRun(e);
 }
 
 function _disposeEffect(e) {
@@ -238,6 +248,7 @@ function notify(subs) {
           e._cleanup = result;
         }
       } catch (err) {
+        if (__devtools?.onError) __devtools.onError(err, { type: 'effect', effect: e });
         if (__DEV__) console.warn('[what] Error in stable effect:', err);
       } finally {
         currentEffect = prev;

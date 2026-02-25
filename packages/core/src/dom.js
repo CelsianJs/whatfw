@@ -3,7 +3,7 @@
 // Components use <what-c> wrapper elements (display:contents) for clean reconciliation.
 // No virtual DOM tree kept in memory — we diff against the live DOM.
 
-import { effect, batch, untrack, signal } from './reactive.js';
+import { effect, batch, untrack, signal, __DEV__, __devtools } from './reactive.js';
 import { reportError, _injectGetCurrentComponent, shallowEqual } from './components.js';
 import { _setComponentRef } from './helpers.js';
 
@@ -97,6 +97,7 @@ function disposeComponent(ctx) {
     try { dispose(); } catch (e) { /* effect already disposed */ }
   }
 
+  if (__DEV__ && __devtools?.onComponentUnmount) __devtools.onComponentUnmount(ctx);
   mountedComponents.delete(ctx);
 }
 
@@ -304,6 +305,7 @@ function createComponent(vnode, parent, isSvg) {
 
   // Track for disposal
   mountedComponents.add(ctx);
+  if (__DEV__ && __devtools?.onComponentMount) __devtools.onComponentMount(ctx);
 
   // Props signal for reactive updates from parent
   // Match React's children semantics: 0→undefined, 1→single child, N→array

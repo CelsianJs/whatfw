@@ -636,3 +636,20 @@ export function clearCache() {
   lastFetchTimestamps.clear();
   inFlightRequests.clear();
 }
+
+/**
+ * Get a snapshot of all cache entries for devtools.
+ * @internal
+ */
+export function __getCacheSnapshot() {
+  const entries = [];
+  for (const [key, sig] of cacheSignals) {
+    entries.push({
+      key,
+      data: sig.peek(),
+      error: errorSignals.has(key) ? errorSignals.get(key).peek() : null,
+      isValidating: validatingSignals.has(key) ? validatingSignals.get(key).peek() : false,
+    });
+  }
+  return entries;
+}
