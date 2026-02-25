@@ -3,7 +3,7 @@
   "version": "0.5.4",
   "description": "What Framework - The closest framework to vanilla JS",
   "type": "module",
-  "main": "dist/what.js",
+  "main": "src/index.js",
   "module": "src/index.js",
   "types": "index.d.ts",
   "exports": {
