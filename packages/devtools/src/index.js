@@ -22,7 +22,10 @@ let componentId = 0;
 // Registries
 const signals = new Map();    // id → { name, ref, createdAt, internal }
 const effects = new Map();    // id → { name, createdAt, depSignalIds, runCount, lastRunAt }
-const components = new Map(); // id → { name, element, mountedAt }
+const components = new Map(); // id → { name, element, mountedAt, parentId }
+
+// Reverse lookup: subscriber Set → signal ID (O(1) dep resolution)
+const subsToSignalId = new WeakMap();
 
 // Error log (capped at 100)
 const errors = [];
@@ -128,13 +131,15 @@ export function registerSignal(sig, name) {
   const id = ++signalId;
   const entry = {
     id,
-    name: name || `signal_${id}`,
+    name: sig._debugName || name || `signal_${id}`,
     ref: sig,
     createdAt: Date.now(),
     internal: false,
   };
   signals.set(id, entry);
   sig._devId = id;
+  // Reverse lookup for O(1) effect dep resolution
+  if (sig._subs) subsToSignalId.set(sig._subs, id);
   emit('signal:created', entry);
   return id;
 }
@@ -192,20 +197,16 @@ function trackEffectRun(e) {
   const entry = effects.get(id);
   if (!entry) return;
 
-  // Resolve deps (subscriber Sets) to signal IDs by matching sig._subs
-  const depSignalIds = new Set();
+  // Resolve deps via WeakMap reverse lookup — O(m) where m = number of deps
+  const depSignalIds = [];
   if (e.deps) {
     for (const subSet of e.deps) {
-      for (const [sigId, sigEntry] of signals) {
-        if (sigEntry.ref._subs === subSet) {
-          depSignalIds.add(sigId);
-          break;
-        }
-      }
+      const sigId = subsToSignalId.get(subSet);
+      if (sigId != null) depSignalIds.push(sigId);
     }
   }
 
-  entry.depSignalIds = [...depSignalIds];
+  entry.depSignalIds = depSignalIds;
   entry.runCount = (entry.runCount || 0) + 1;
   entry.lastRunAt = Date.now();
   emit('effect:run', { id, depSignalIds: entry.depSignalIds, runCount: entry.runCount });
@@ -241,13 +242,14 @@ function captureError(err, context) {
 /**
  * Register a component mount.
  */
-export function registerComponent(name, element) {
+export function registerComponent(name, element, parentDevId) {
   if (!installed) return;
   const id = ++componentId;
   const entry = {
     id,
     name: name || 'Anonymous',
     element,
+    parentId: parentDevId || null,
     mountedAt: Date.now(),
   };
   components.set(id, entry);
@@ -304,7 +306,7 @@ export function getSnapshot(opts = {}) {
 
   const componentList = [];
   for (const [id, entry] of components) {
-    componentList.push({ id, name: entry.name });
+    componentList.push({ id, name: entry.name, parentId: entry.parentId });
   }
 
   return {
@@ -345,7 +347,8 @@ export function installDevTools(core) {
     onError: (err, context) => captureError(err, context),
     onComponentMount: (ctx) => {
       const name = ctx.Component?.displayName || ctx.Component?.name || 'Anonymous';
-      const id = registerComponent(name, ctx._wrapper);
+      const parentDevId = ctx._parentCtx?._devId || null;
+      const id = registerComponent(name, ctx._wrapper, parentDevId);
       ctx._devId = id;
     },
     onComponentUnmount: (ctx) => {

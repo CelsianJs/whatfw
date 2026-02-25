@@ -2,7 +2,9 @@
 // Signals + Effects: fine-grained reactivity without virtual DOM overhead
 
 // Dev-mode flag — build tools can dead-code-eliminate when false
-export const __DEV__ = typeof process !== 'undefined' && process.env?.NODE_ENV !== 'production' || true;
+export const __DEV__ = typeof process !== 'undefined'
+  ? process.env?.NODE_ENV !== 'production'
+  : true;
 
 // DevTools hooks — set by what-devtools when installed.
 // These are no-ops in production (dead-code eliminated with __DEV__).
@@ -22,7 +24,7 @@ let pendingEffects = [];
 // A reactive value. Reading inside an effect auto-tracks the dependency.
 // Writing triggers only the effects that depend on this signal.
 
-export function signal(initial) {
+export function signal(initial, debugName) {
   let value = initial;
   const subs = new Set();
 
@@ -59,7 +61,10 @@ export function signal(initial) {
   };
 
   sig._signal = true;
-  if (__DEV__) sig._subs = subs;
+  if (__DEV__) {
+    sig._subs = subs;
+    if (debugName) sig._debugName = debugName;
+  }
 
   // Notify devtools of signal creation
   if (__DEV__ && __devtools) __devtools.onSignalCreate(sig);
