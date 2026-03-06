@@ -544,7 +544,7 @@ function reconcileUnkeyed(parent, oldNodes, newVNodes, beforeMarker) {
       const node = createDOM(newVNode, parent);
       if (node) {
         const ref = getInsertionRef(oldNodes, beforeMarker);
-        parent.insertBefore(node, ref);
+        safeInsertBefore(parent, node, ref);
         newNodes.push(node);
       }
       continue;
@@ -659,14 +659,14 @@ function reconcileKeyed(parent, oldNodes, newVNodes, beforeMarker) {
 
       // Move if not in LIS
       if (!lisSet.has(i) && patched.parentNode) {
-        parent.insertBefore(patched, lastInserted);
+        safeInsertBefore(parent, patched, lastInserted);
       }
       lastInserted = patched;
     } else {
       // Create new node
       const node = createDOM(vnode, parent);
       if (node) {
-        parent.insertBefore(node, lastInserted);
+        safeInsertBefore(parent, node, lastInserted);
         lastInserted = node;
       }
       newNodes[i] = node;
@@ -723,6 +723,18 @@ function getInsertionRef(nodes, marker) {
     return last.nextSibling;
   }
   return marker ? marker.nextSibling : null;
+}
+
+// Safe insertBefore: guards against stale reference nodes from nested reconciliation.
+// When patchNode triggers a child component re-render (via propsSignal.set), the child's
+// effect can run synchronously and mutate the DOM tree, leaving the parent's reference
+// node detached. This helper falls back to appendChild when the ref is stale.
+function safeInsertBefore(parent, node, ref) {
+  if (ref && ref.parentNode === parent) {
+    parent.insertBefore(node, ref);
+  } else {
+    parent.appendChild(node);
+  }
 }
 
 // Helper: clean up array marker range (startMarker .. endMarker) and return a clean replacement node

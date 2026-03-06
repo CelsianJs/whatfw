@@ -136,7 +136,10 @@ function reconcileInsert(parent, value, current, marker) {
   for (let i = newNodes.length - 1; i >= 0; i--) {
     const node = newNodes[i];
     if (node.parentNode !== parent || node.nextSibling !== ref) {
-      parent.insertBefore(node, ref);
+      // Guard against stale ref from nested reconciliation
+      if (ref && ref.parentNode !== parent) ref = null;
+      if (ref) parent.insertBefore(node, ref);
+      else parent.appendChild(node);
     }
     ref = node;
   }
@@ -360,6 +363,8 @@ function _reconcileMiddle(parent, endMarker, oldItems, newItems, mappedNodes, di
     const mi = i - start;
     if (oldIndices[mi] === -1 || !inLIS[mi]) {
       // New item or moved item — insert
+      // Guard against stale nextSibling from nested reconciliation
+      if (nextSibling && nextSibling.parentNode !== parent) nextSibling = endMarker;
       parent.insertBefore(newMapped[i], nextSibling);
     }
     nextSibling = newMapped[i];
@@ -649,6 +654,8 @@ function reconcileKeyed(parent, endMarker, oldItems, newItems, mappedNodes, disp
   for (let i = newEnd; i >= start; i--) {
     const mi = i - start;
     if (oldIndices[mi] === -1 || !inLIS[mi]) {
+      // Guard against stale nextSibling from nested reconciliation
+      if (nextSibling && nextSibling.parentNode !== parent) nextSibling = endMarker;
       parent.insertBefore(newMapped[i], nextSibling);
     }
     nextSibling = newMapped[i];
